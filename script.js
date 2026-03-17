@@ -11,7 +11,34 @@ $(document).ready(function() {
     loadDataServer(); // Panggil data pertama kali
     setInterval(function() { loadDataServer(true); }, 60000); // Auto-refresh setiap 60 detik
   });
-
+// Fungsi untuk menutup sidebar (mobile)
+function bukaSidebar() {
+    $('#sidebar').addClass('active');
+    $('.sidebar-overlay').addClass('active');
+}
+function tutupSidebar() {
+    $('#sidebar').removeClass('active');
+    $('.sidebar-overlay').removeClass('active');
+}
+$('#sidebarCollapse').on('click', function() {
+    bukaSidebar();
+});
+$('#closeSidebar').on('click', function(e) {
+    e.preventDefault();
+    tutupSidebar();
+});
+$('#sidebarOverlay').on('click', function() {
+    tutupSidebar();
+});
+$('.sidebar-link').on('click', function() {
+    if ($(window).width() <= 768) {
+        tutupSidebar();
+    }
+});
+// Event klik overlay (tutup sidebar)
+$('#sidebarOverlay').on('click', function() {
+    tutupSidebar();
+});
 // ==========================================
 // INISIALISASI UI & SIDEBAR NAVIGATION
 // ==========================================
@@ -25,12 +52,7 @@ function initUI() {
     $('#selectGrafikPegawai').select2({ placeholder: "Ketik nama untuk mencari...", allowClear: true, width: '100%' });
     $('#selectGrafikPegawai').on('change', updateChartPegawai);
     $('#nama').select2({ placeholder: "Pilih Pegawai...", width: '100%' });
-  
-    // Sidebar Logic
-    $('#sidebarCollapse').on('click', function() {
-      $('#sidebar, #content').toggleClass('active');
-      $('.sidebar-overlay').toggleClass('active');
-    });
+
   
     $('.sidebar-link').on('click', function(e) {
       e.preventDefault();
