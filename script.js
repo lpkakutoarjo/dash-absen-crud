@@ -11,33 +11,31 @@ $(document).ready(function() {
     loadDataServer(); // Panggil data pertama kali
     setInterval(function() { loadDataServer(true); }, 60000); // Auto-refresh setiap 60 detik
   });
-// Fungsi untuk menutup sidebar (mobile)
-function bukaSidebar() {
-    $('#sidebar').addClass('active');
-    $('.sidebar-overlay').addClass('active');
-}
-function tutupSidebar() {
-    $('#sidebar').removeClass('active');
-    $('.sidebar-overlay').removeClass('active');
-}
+// Toggle sidebar (buka/tutup) saat klik hamburger
 $('#sidebarCollapse').on('click', function() {
-    bukaSidebar();
+    $('#sidebar').toggleClass('active');
+    $('.sidebar-overlay').toggleClass('active');
 });
+
+// Tutup sidebar saat klik tombol X
 $('#closeSidebar').on('click', function(e) {
     e.preventDefault();
-    tutupSidebar();
+    $('#sidebar').removeClass('active');
+    $('.sidebar-overlay').removeClass('active');
 });
+
+// Tutup sidebar saat klik overlay
 $('#sidebarOverlay').on('click', function() {
-    tutupSidebar();
+    $('#sidebar').removeClass('active');
+    $('.sidebar-overlay').removeClass('active');
 });
+
+// Tutup sidebar otomatis saat klik menu (khusus mobile)
 $('.sidebar-link').on('click', function() {
     if ($(window).width() <= 768) {
-        tutupSidebar();
+        $('#sidebar').removeClass('active');
+        $('.sidebar-overlay').removeClass('active');
     }
-});
-// Event klik overlay (tutup sidebar)
-$('#sidebarOverlay').on('click', function() {
-    tutupSidebar();
 });
 // ==========================================
 // INISIALISASI UI & SIDEBAR NAVIGATION
