@@ -1,6 +1,5 @@
 // URL Web App GAS Anda (TIDAK PERLU DIGANTI LAGI)
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbw3tkvvQ384ijGs4TLX1OACpCYhU6gC8hRm1ECL3ESWj2N-e54IwpUvu4DDdHGqTK_1/exec';
-
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxH5x1BXWMqkJVjTpYMM2tL60ysBGDIo2I4vHSAME6my9vbHVlQ9kRNnS_En8pwBZY/exec';
 let dataTableRekapan, dataTableMaster, dataTableLogs;
 let globalLogs = [], rawDataPegawai = [], systemLogsData = [];
 let chartAll, chartPersonal;
@@ -9,7 +8,6 @@ let isRekapanLoaded = false, isLogsLoaded = false;
 $(document).ready(function() {
     initUI();
     loadDataServer(); // Panggil data pertama kali
-    setInterval(function() { loadDataServer(true); }, 60000); // Auto-refresh setiap 60 detik
   });
 // Toggle sidebar (buka/tutup) saat klik hamburger
 $('#sidebarCollapse').on('click', function() {
@@ -83,61 +81,100 @@ async function fetchPost(action, payload) {
 }
 
 function setDatabaseStatus(status) {
-    const badge = $('#dbStatusBadge');
-    if (status === 'connecting') {
-      badge.attr('class', 'badge bg-warning text-dark px-3 py-2 rounded-pill').html('<i class="fas fa-sync fa-spin me-2"></i> Sinkronisasi...');
-    } else if (status === 'connected') {
-      badge.attr('class', 'badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill').html('<i class="fas fa-wifi me-2"></i> Terhubung');
-    } else {
-      badge.attr('class', 'badge bg-danger text-white px-3 py-2 rounded-pill').html('<i class="fas fa-exclamation-triangle me-2"></i> Gagal');
-    }
+  const badge = document.getElementById('dbStatusBadge');
+  if (status === 'connecting') {
+    badge.className = 'badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm status-badge';
+    badge.innerHTML = '<i class="fas fa-circle-notch fa-spin me-2"></i> Sinkronisasi...';
+  } else if (status === 'connected') {
+    badge.className = 'badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill status-badge';
+    badge.innerHTML = '<i class="fas fa-wifi me-2"></i> Terhubung';
+  } else if (status === 'error') {
+    badge.className = 'badge bg-danger text-white px-3 py-2 rounded-pill shadow-sm status-badge';
+    badge.innerHTML = '<i class="fas fa-exclamation-triangle me-2"></i> Gagal Terhubung';
   }
-
-  async function loadDataServer(isSilent = false) {
-    setDatabaseStatus('connecting');
-    if (!isSilent) $('#tabelBody').html(`<tr><td colspan="10" class="text-center py-5"><div class="spinner-border text-primary opacity-50 mb-3"></div><h6 class="text-muted">Menarik data...</h6></td></tr>`);
+}
+function updateLastUpdated() {
+  const now = new Date();
+  document.getElementById('lastUpdate').innerText = `Diperbarui: ${now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`;
+}
+async function loadDataServer(isSilent = false) {
+  isRekapanLoaded = false;
+  isLogsLoaded = false;
+  setDatabaseStatus('connecting');
+  
+  if (!isSilent) {
+    document.getElementById('tabelBody').innerHTML = `
+      <tr>
+        <td colspan="10" class="text-center py-5">
+          <div class="spinner-border text-primary opacity-50 mb-3" style="width: 2.5rem; height: 2.5rem;"></div>
+          <h6 class="text-muted fw-normal">Menarik data terbaru dari server...</h6>
+        </td>
+      </tr>`;
+  }
+  
+  try {
+    // Tambahkan parameter time (t) untuk menghindari cache browser
+    const response = await fetch(`${GAS_API_URL}?t=${new Date().getTime()}`);
+    if (!response.ok) throw new Error('Jaringan bermasalah.');
+    const result = await response.json();
     
-    try {
-      const response = await fetch(`${GAS_API_URL}?t=${new Date().getTime()}`);
-      const result = await response.json();
+    if (result.status === 'success') {
+      // 1. Simpan data ke variabel global
+      rawDataPegawai = result.data.rekapan;
+      globalLogs = result.data.logs;
+      systemLogsData = result.data.systemLogs || []; 
+      globalHariEfektifBulanan = result.data.hariEfektifBulanan || {};
       
-      if (result.status === 'success') {
-        rawDataPegawai = result.data.rekapan; 
-        globalLogs = result.data.logs;
-        systemLogsData = result.data.systemLogs || []; // Menarik data riwayat sistem keseluruhan
-        
-        if (!isSilent) {
-          populateDropdownPegawai(rawDataPegawai);
-          populateDaftarPegawai(rawDataPegawai);
-          populateDropdownGroup(rawDataPegawai);
-        }
-        
-        isRekapanLoaded = true; 
-        isLogsLoaded = true;
-  
-        setDatabaseStatus('connected');
-        $('#lastUpdate').text(`Diperbarui: ${new Date().toLocaleTimeString('id-ID')}`);
-  
-        // PENENTU OTOMATIS: Fungsi log diletakkan di luar "isSilent" agar...
-        // tabel selalu diperbarui di balik layar (Real-time) setiap kali melakukan simpan/edit/hapus!
-        populateLogAktivitas(systemLogsData);
-  
-        try {
-          applyFilterBulan();
-          renderChartBulanKeseluruhan(); 
-          updateChartPegawai();
-        } catch (graphError) {
-          console.warn("Grafik gagal dimuatkan, tetapi data berjaya ditarik:", graphError);
-        }
-  
-      } else {
-        throw new Error(result.message);
+      // 2. Jalankan fungsi populasi komponen UI
+      if (!isSilent) {
+        populateDropdownPegawai(rawDataPegawai);
+        // Tambahkan populasi lain jika ada (seperti Daftar Pegawai atau Group)
+        if (typeof populateDaftarPegawai === 'function') populateDaftarPegawai(rawDataPegawai);
+        if (typeof populateDropdownGroup === 'function') populateDropdownGroup(rawDataPegawai);
       }
-    } catch (error) {
-      console.error("Kesalahan sistem:", error);
-      setDatabaseStatus('error');
+      
+      isRekapanLoaded = true;
+      isLogsLoaded = true;
+      
+      // 3. Update Status dan Waktu Terakhir
+      setDatabaseStatus('connected');
+      const lastUpdateElem = document.getElementById('lastUpdate');
+      if (lastUpdateElem) {
+        lastUpdateElem.innerText = `Diperbarui: ${new Date().toLocaleTimeString('id-ID')}`;
+      }
+
+      // 4. TAMPILKAN LOG SISTEM (Penting agar log muncul)
+      if (typeof populateLogAktivitas === 'function') {
+        populateLogAktivitas(systemLogsData);
+      }
+      
+      // 5. Render Grafik dan Filter Tabel
+      try {
+        applyFilterBulan(); // Ini akan memproses tabel berdasarkan filter yang aktif
+        renderChartBulanKeseluruhan();
+        updateChartPegawai();
+        if (typeof checkAndRenderRekapan === 'function') checkAndRenderRekapan();
+      } catch (graphError) {
+        console.warn("Grafik/Filter gagal dimuat, tetapi data berhasil ditarik:", graphError);
+      }
+
+    } else { 
+      throw new Error(result.message); 
+    }
+  } catch (error) {
+    console.error("Error: ", error);
+    setDatabaseStatus('error');
+    if (!isSilent) {
+      document.getElementById('tabelBody').innerHTML = `
+        <tr>
+          <td colspan="10" class="text-center py-5 text-danger bg-danger bg-opacity-10 rounded">
+            <i class="fas fa-exclamation-circle fs-2 mb-2"></i><br>
+            Koneksi ke Database gagal: ${error.message}
+          </td>
+        </tr>`;
     }
   }
+}
   
   // Perbaikan pada bagian Registrasi Plugin di renderChartBulanKeseluruhan
   function renderChartBulanKeseluruhan() {
@@ -165,10 +202,8 @@ function setDatabaseStatus(status) {
 function checkAndRenderRekapan() {
   if (isRekapanLoaded && isLogsLoaded) {
     applyFilterBulan();
-    $('#lastUpdate').text(`Diperbarui: ${new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`);
-    setDatabaseStatus('connected');
-    let elmSearchGroup = $('#searchGroup').val();
-    if(elmSearchGroup !== "") tampilkanAnggotaGroup();
+    updateLastUpdated();
+    setDatabaseStatus('connected'); 
   }
 }
 
@@ -176,45 +211,75 @@ function checkAndRenderRekapan() {
 // DATA PROCESSING & POPULATION
 // ==========================================
 function applyFilterBulan() {
-  let bulanTerpilih = $('#filterBulanRekapan').val();
+  let bulanTerpilih = document.getElementById('filterBulanRekapan').value;
   let currentYear = new Date().getFullYear();
   let filteredData = [];
-  let totalHadir = 0; let totalAbsen = 0;
+  
+  let totalKeseluruhanHadir = 0;
+  let totalKeseluruhanAbsen = 0;
 
   if (bulanTerpilih === "ALL") {
     filteredData = rawDataPegawai;
-    rawDataPegawai.forEach(p => { totalHadir += parseInt(p.jumlahKehadiran) || 0; totalAbsen += parseInt(p.jmlTidakHadir) || 0; });
+    rawDataPegawai.forEach(p => {
+      totalKeseluruhanHadir += parseInt(p.jumlahKehadiran) || 0;
+      totalKeseluruhanAbsen += parseInt(p.jmlTidakHadir) || 0;
+    });
   } else {
     let formatBulan = `${currentYear}-${bulanTerpilih}`; 
+    
     rawDataPegawai.forEach(pegawai => {
       let logsBulanIni = globalLogs.filter(log => log.nama === pegawai.nama && log.bulan === formatBulan);
-      let jmlHadir = 0, jmlCuti = 0, jmlDL = 0, jmlTK = 0, notesBulanIni = []; 
+      
+      let jmlHadir = 0, jmlCuti = 0, jmlDL = 0, jmlTK = 0;
+      let notesBulanIni = []; 
       
       logsBulanIni.forEach(log => {
         let st = log.status.toUpperCase();
-        if (st === "HADIR") jmlHadir++; else if (st === "DL") jmlDL++; else if (st === "TK") jmlTK++; else if (st !== "LIBUR") jmlCuti++; 
-        if (log.keterangan && log.keterangan.trim() !== "") notesBulanIni.push(`Tgl ${log.tanggal.split('-')[2]}: <span class="text-dark">${log.keterangan}</span>`);
+        if (st === "HADIR") jmlHadir++;
+        else if (st === "DINAS LUAR" || st === "DL") jmlDL++;
+        else if (st === "TANPA KETERANGAN" || st === "TK") jmlTK++;
+        else if (st.includes("CUTI")) jmlCuti++; 
+        
+        if (log.keterangan && log.keterangan.trim() !== "") {
+          let hariTgl = log.tanggal.split('-')[2]; 
+          notesBulanIni.push(`Tgl ${hariTgl}: <span class="text-dark">${log.keterangan}</span>`);
+        }
       });
       
       let jmlTidakHadir = jmlCuti + jmlDL + jmlTK;
-      totalHadir += jmlHadir; totalAbsen += jmlTidakHadir;
+      
+      // --- PERBAIKAN PENGAMBILAN HARI EFEKTIF PER PEGAWAI ---
+      let hariEfektif = 0;
+      if (bulanTerpilih === "ALL") {
+        hariEfektif = pegawai.hariEfektif || pegawai["HARI EFEKTIF"] || pegawai.HariEfektif || 0; 
+      } else {
+        // Deteksi secara spesifik berdasarkan nama pegawai di bulan tersebut
+        if (globalHariEfektifBulanan[formatBulan] && globalHariEfektifBulanan[formatBulan][pegawai.nama]) {
+          hariEfektif = globalHariEfektifBulanan[formatBulan][pegawai.nama];
+        } else {
+          hariEfektif = 0;
+        }
+      }
+      
+      let finalKeterangan = notesBulanIni.length > 0 ? notesBulanIni.join('<br>') : '<span class="text-muted fst-italic">-</span>';
+
+      totalKeseluruhanHadir += jmlHadir;
+      totalKeseluruhanAbsen += jmlTidakHadir;
 
       filteredData.push({
         no: pegawai.no, nama: pegawai.nama, golongan: pegawai.golongan,
-        hariEfektif: (jmlHadir + jmlTidakHadir), cuti: jmlCuti, dl: jmlDL, tk: jmlTK,
-        jmlTidakHadir: jmlTidakHadir, jumlahKehadiran: jmlHadir, 
-        keterangan: notesBulanIni.length > 0 ? notesBulanIni.join('<br>') : '<span class="text-muted fst-italic">-</span>'
+        hariEfektif: hariEfektif, cuti: jmlCuti, dl: jmlDL, tk: jmlTK,
+        jmlTidakHadir: jmlTidakHadir, jumlahKehadiran: jmlHadir, keterangan: finalKeterangan
       });
     });
   }
 
   animateValue("statTotalPegawai", 0, filteredData.length, 500);
-  animateValue("statTotalHadir", 0, totalHadir, 500, ' <span class="fs-6 text-muted fw-normal">Hari</span>');
-  animateValue("statTotalAbsen", 0, totalAbsen, 500, ' <span class="fs-6 text-muted fw-normal">Hari</span>');
+  animateValue("statTotalHadir", 0, totalKeseluruhanHadir, 500, ' <span class="fs-6 text-muted fw-normal">Hari</span>');
+  animateValue("statTotalAbsen", 0, totalKeseluruhanAbsen, 500, ' <span class="fs-6 text-muted fw-normal">Hari</span>');
 
   populateTabelRekapan(filteredData);
 }
-
 function animateValue(id, start, end, duration, suffix = '') {
   const obj = document.getElementById(id); if(!obj) return;
   let startTimestamp = null;
@@ -229,27 +294,35 @@ function animateValue(id, start, end, duration, suffix = '') {
 
 function populateTabelRekapan(data) {
   let currentPage = 0; let currentSearch = '';
-  if (dataTableRekapan) { currentPage = dataTableRekapan.page(); currentSearch = dataTableRekapan.search(); dataTableRekapan.destroy(); }
+  if (dataTableRekapan) {
+    currentPage = dataTableRekapan.page(); currentSearch = dataTableRekapan.search(); dataTableRekapan.destroy();
+  }
+  
   let tbody = '';
   data.forEach(row => {
     tbody += `<tr>
-      <td class="text-muted fw-medium">${row.no}</td><td class="text-start fw-bold text-dark">${row.nama}</td>
+      <td class="text-muted fw-medium">${row.no}</td>
+      <td class="text-start fw-bold text-dark">${row.nama}</td>
       <td><span class="badge bg-light text-secondary border border-secondary border-opacity-25 px-2 py-1">${row.golongan}</span></td>
-      <td class="fw-bold text-primary">${row.hariEfektif}</td><td class="text-muted">${row.cuti}</td><td class="text-muted">${row.dl}</td><td class="text-muted">${row.tk}</td>
-      <td class="fw-bold text-danger bg-danger bg-opacity-10">${row.jmlTidakHadir}</td><td class="fw-bold text-success bg-success bg-opacity-10">${row.jumlahKehadiran}</td>
+      <td class="fw-bold text-primary">${row.hariEfektif}</td>
+      <td class="text-muted">${row.cuti}</td>
+      <td class="text-muted">${row.dl}</td>
+      <td class="text-muted">${row.tk}</td>
+      <td class="fw-bold text-danger bg-danger bg-opacity-10">${row.jmlTidakHadir}</td>
+      <td class="fw-bold text-success bg-success bg-opacity-10">${row.jumlahKehadiran}</td>
       <td class="text-start small lh-sm">${row.keterangan}</td>
     </tr>`;
   });
-  $('#tabelBody').html(tbody);
+  document.getElementById('tabelBody').innerHTML = tbody;
   
-  // MENGGUNAKAN HTTPS UNTUK CDN AGAR TIDAK ERROR CORS DI LOKAL
   dataTableRekapan = $('#tabelRekapan').DataTable({ 
-    pageLength: 10, 
-    language: { url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/id.json' }, 
-    dom: '<"row align-items-center mb-3"<"col-md-6"l><"col-md-6"f>>rt<"row align-items-center mt-3"<"col-md-6"i><"col-md-6"p>>' 
+     pageLength: 10, 
+     language: { url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/id.json' },
+     dom: '<"row align-items-center mb-3"<"col-md-6"l><"col-md-6"f>>rt<"row align-items-center mt-3"<"col-md-6"i><"col-md-6"p>>',
   });
   
-  if (currentSearch) dataTableRekapan.search(currentSearch); dataTableRekapan.page(currentPage).draw('page');
+  if (currentSearch) dataTableRekapan.search(currentSearch);
+  dataTableRekapan.page(currentPage).draw('page');
 }
 
 function populateDaftarPegawai(data) {
@@ -290,20 +363,38 @@ function populateDropdownPegawai(data) {
   }
 
 function populateDropdownGroup(data) {
+  // 1. Ambil data unik Group dan Golongan
   let uniqueGroups = [...new Set(data.map(item => item.group))].filter(g => g !== "-" && g !== "" && g !== undefined);
   let uniqueGolongan = [...new Set(data.map(item => item.golongan))].filter(g => g !== "-" && g !== "" && g !== undefined);
 
+  // 2. Siapkan template options
   let optionsMassal = '<option value="ALL" class="fw-bold text-primary">Semua Group (Seluruh Pegawai)</option>';
-  let listGroupHTML = ''; let optionsSearch = '<option value="">-- Silakan Pilih Group --</option>';
+  let listGroupHTML = ''; 
+  let optionsSearch = '<option value="">-- Silakan Pilih Group --</option>';
   
-  uniqueGroups.forEach(g => { optionsMassal += `<option value="${g}">${g}</option>`; listGroupHTML += `<option value="${g}">${g}</option>`; optionsSearch += `<option value="${g}">${g}</option>`; });
+  // 3. Loop untuk mengisi konten dropdown
+  uniqueGroups.forEach(g => { 
+    optionsMassal += `<option value="${g}">${g}</option>`; 
+    listGroupHTML += `<option value="${g}">${g}</option>`; 
+    optionsSearch += `<option value="${g}">${g}</option>`; 
+  });
+
+  // --- RENDER KE ELEMENT HTML ---
   
-  $('#groupMassal').html(optionsMassal);
+  // Menu Dropdown (Status Massal & Hari Efektif)
+$('#groupMassal, #groupEfektif').html(optionsMassal);
+  // Menu List (Datalist untuk input manual)
   $('#listGroup').html(listGroupHTML);
+  
+  // Menu Filter & Pindah Group
   $('#searchGroup').html(optionsSearch);
   $('#pindahTargetGroup').html(optionsSearch.replace('-- Silakan Pilih Group --', 'Pilih target group tujuan...'));
   
-  let listGolonganHTML = ''; uniqueGolongan.forEach(g => { listGolonganHTML += `<option value="${g}">${g}</option>`; });
+  // List Golongan
+  let listGolonganHTML = ''; 
+  uniqueGolongan.forEach(g => { 
+    listGolonganHTML += `<option value="${g}">${g}</option>`; 
+  });
   $('#listGolongan').html(listGolonganHTML);
 }
 
@@ -346,47 +437,124 @@ function renderChartBulanKeseluruhan() {
 }
 
 function updateChartPegawai() {
-  let namaPegawai = $('#selectGrafikPegawai').val(); if(!namaPegawai) return;
-  let bulanTerpilih = $('#selectBulanGrafik').val(); let currentYear = new Date().getFullYear(); let formatBulan = `${currentYear}-${bulanTerpilih}`;
-  let stats = { "Hadir": 0, "Cuti Tahunan": 0, "Cuti Melahirkan": 0, "Cuti Sakit": 0, "Cuti Besar": 0, "Cuti Diluar Tanggungan Negara": 0, "Cuti Alasan Penting": 0, "Dinas Luar": 0, "Tanpa Keterangan": 0 };
+  let namaPegawai = document.getElementById('selectGrafikPegawai').value;
+  if(!namaPegawai) return;
 
+  // 1. Ambil target Hari Efektif pegawai dari database (bukan hasil hitung log)
+  let pegawai = rawDataPegawai.find(p => p.nama === namaPegawai);
+  let targetHariEfektif = 0;
+  if (pegawai) {
+    targetHariEfektif = parseInt(pegawai.hariEfektif || pegawai["HARI EFEKTIF"] || pegawai.HariEfektif) || 0;
+  }
+
+  let bulanTerpilih = document.getElementById('selectBulanGrafik').value;
+  let currentYear = new Date().getFullYear(); 
+  let formatBulan = `${currentYear}-${bulanTerpilih}`;
+  let stats = { "Hadir": 0, "Cuti Tahunan": 0, "Cuti Melahirkan": 0, "Cuti Sakit": 0, "Cuti Besar": 0, "Cuti Diluar Tanggungan Negara": 0, "Cuti Alasan Penting": 0, "Cuti Bersama": 0, "Dinas Luar": 0, "Tanpa Keterangan": 0 };
+  // 2. Hitung jumlah log kehadiran yang sudah masuk
   globalLogs.forEach(log => {
     if(log.nama === namaPegawai && (bulanTerpilih === "ALL" || log.bulan === formatBulan)) {
       let st = log.status.toUpperCase();
-      if(st === "HADIR") stats["Hadir"]++; else if(st === "DL") stats["Dinas Luar"]++; else if(st === "TK") stats["Tanpa Keterangan"]++;
-      else stats[Object.keys(colorMap).find(k => k.toUpperCase() === st)]++;
+      if(st === "HADIR") stats["Hadir"]++;
+      else if(st === "CUTI TAHUNAN") stats["Cuti Tahunan"]++;
+      else if(st === "CUTI MELAHIRKAN") stats["Cuti Melahirkan"]++;
+      else if(st === "CUTI SAKIT") stats["Cuti Sakit"]++;
+      else if(st === "CUTI BESAR") stats["Cuti Besar"]++;
+      else if(st === "CUTI DILUAR TANGGUNGAN NEGARA") stats["Cuti Diluar Tanggungan Negara"]++;
+      else if(st === "CUTI ALASAN PENTING") stats["Cuti Alasan Penting"]++;
+      else if(st === "DINAS LUAR" || st === "DL") stats["Dinas Luar"]++;
+      else if(st === "TANPA KETERANGAN" || st === "TK") stats["Tanpa Keterangan"]++;
+      else if(st === "CUTI BERSAMA") stats["Cuti Bersama"]++;
     }
   });
 
-  let labels = [], dataCounts = [], bgColors = [], totalEfektif = 0;
-  for (let key in stats) { if (stats[key] > 0) { labels.push(key); dataCounts.push(stats[key]); bgColors.push(colorMap[key]); totalEfektif += stats[key]; } }
+  let labels = [], dataCounts = [], bgColors = [], totalTercatat = 0;
+  for (let key in stats) {
+    if (stats[key] > 0) { 
+      labels.push(key); 
+      dataCounts.push(stats[key]); 
+      bgColors.push(colorMap[key]); 
+      totalTercatat += stats[key]; 
+    }
+  }
 
-  const ctx = document.getElementById('chartPerPegawai').getContext('2d');
-  if(chartPersonal) chartPersonal.destroy();
+  // 3. LOGIKA PERSENTASE BERDASARKAN HARI EFEKTIF
+  // Pembagi 100% didasarkan pada Hari Efektif dari Sheet. 
+  let pembagi = targetHariEfektif > 0 ? targetHariEfektif : totalTercatat;
 
-  chartPersonal = new Chart(ctx, {
-    type: 'doughnut',
-    data: { labels: labels.length ? labels : ['Belum Ada Data'], datasets: [{ data: dataCounts.length ? dataCounts : [1], backgroundColor: bgColors.length ? bgColors : ['#f1f5f9'], borderWidth: 0, hoverOffset: 4 }] },
-    options: {
-      responsive: true, maintainAspectRatio: false, cutout: '75%',
-      plugins: { legend: { position: 'right', labels: { usePointStyle: true, padding: 15, font: { family: "'Plus Jakarta Sans'" } } }, datalabels: { display: false } }
-    },
-    plugins: [{
-      id: 'textCenter',
-      beforeDraw: function(chart) {
-        if(totalEfektif > 0) {
-          var width = chart.width, height = chart.height, ctx = chart.ctx; ctx.restore();
-          let fontSize = (height / 110).toFixed(2); ctx.font = "bold " + fontSize + "em 'Plus Jakarta Sans'"; ctx.textBaseline = "middle"; ctx.fillStyle = "#1e293b";
-          let text = totalEfektif, textX = Math.round((width - ctx.measureText(text).width) / 2) - 60, textY = height / 2 - 10;
-          ctx.fillText(text, textX, textY);
-          ctx.font = "600 " + (fontSize*0.3) + "em 'Plus Jakarta Sans'"; ctx.fillStyle = "#64748b"; let subText = "Hari Efektif";
-          ctx.fillText(subText, textX + (ctx.measureText(text).width/2) - (ctx.measureText(subText).width/2), textY + 25); ctx.save();
-        }
-      }
-    }]
-  });
+  // Tambahkan irisan "Sisa Hari" ke dalam Pie Chart jika log terekam masih kurang dari Hari Efektif
+  // Ini memastikan secara visual potongan persentase "Hadir" akurat di dalam lingkaran
+  if (targetHariEfektif > totalTercatat) {
+    labels.push("Libur/Cuti/DL/TK");
+    dataCounts.push(targetHariEfektif - totalTercatat);
+    bgColors.push("#e2e8f0"); // Warna abu-abu netral
+  }
+
+const ctx = document.getElementById('chartPerPegawai').getContext('2d');
+if (chartPersonal) chartPersonal.destroy();
+if (typeof ChartDataLabels !== 'undefined') {
+  Chart.register(ChartDataLabels);
 }
 
+  chartPersonal = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: labels.length ? labels : ['Belum Ada Data'],
+      datasets: [{ 
+        data: dataCounts.length ? dataCounts : [1], 
+        backgroundColor: bgColors.length ? bgColors : ['#f8f9fa'], 
+        borderWidth: 1, 
+        hoverOffset: 4 
+      }]
+    },
+    
+    options: {
+      responsive: true, 
+      maintainAspectRatio: false, 
+      plugins: {
+        
+        legend: { 
+          position: 'right', 
+          labels: { 
+            usePointStyle: true, 
+            padding: 15, 
+            font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 } 
+          } 
+        },
+        datalabels: { 
+          color: (context) => {
+             let label = context.chart.data.labels[context.dataIndex];
+             // Buat teks gelap agar terbaca pada irisan abu-abu (Sisa Hari)
+             return label === 'Belum Ada Data' || label === 'Sisa Hari (Belum Absen)' ? '#475569' : '#ffffff';
+          },
+          font: { weight: 'bold', size: 12 },
+          formatter: (value, context) => {
+            let label = context.chart.data.labels[context.dataIndex];
+            if (label === 'Belum Ada Data' || pembagi === 0) return '';
+            
+            // Kalkulasi matematis: (Nilai Kehadiran / Target Hari Efektif) * 100
+            let percentage = ((value / pembagi) * 100).toFixed(1);
+            return percentage > 0 ? percentage + '%' : ''; 
+          }
+        },
+        tooltip: { 
+          backgroundColor: 'rgba(255, 255, 255, 0.9)', 
+          titleColor: '#2c3e50', 
+          bodyColor: '#2c3e50', 
+          borderColor: '#e9ecef', 
+          borderWidth: 1, 
+          callbacks: { 
+            label: (c) => {
+              if (pembagi === 0) return ' Belum Ada Data';
+              let percentage = ((c.raw / pembagi) * 100).toFixed(1);
+              return ` ${c.label}: ${c.raw} Hari (${percentage}%)`;
+            }
+          } 
+        }
+      }
+    }
+  });
+}
 // ==========================================
 // CRUD ACTIONS (POST)
 // ==========================================
@@ -420,6 +588,39 @@ async function handleAbsensiSubmit(e) {
   btn.html('<i class="fas fa-save me-2"></i>Simpan Kehadiran').prop('disabled', false);
 }
 
+async function handleHariEfektif(e) {
+  e.preventDefault();
+  
+  const grp = $('#groupEfektif').val();
+  const namaBulan = $('#bulanEfektif option:selected').text(); // Mengambil teks "Januari", "Februari", dll
+  const jmlHari = $('#jumlahHari').val();
+  
+  let confirmMsg = `Update hari efektif di TAB [${namaBulan}] untuk Group: ${grp}?`;
+
+  if (confirm(confirmMsg)) {
+    const btn = $('#btnSubmitEfektif');
+    btn.html('<i class="fas fa-spinner fa-spin me-2"></i>Membuka Tab...').prop('disabled', true);
+
+    const obj = {
+      targetSheet: namaBulan, // Nama Tab yang akan dituju
+      group: grp,
+      hariEfektif: parseInt(jmlHari)
+    };
+
+    try {
+      let res = await fetchPost('setHariEfektif', obj);
+      showToast(res.message, res.status);
+      if (res.status === 'success') {
+        $('#formHariEfektif')[0].reset();
+        loadDataServer(true); 
+      }
+    } catch (err) {
+      showToast(err.message, "error");
+    } finally {
+      btn.html('<i class="fas fa-save me-2"></i>Simpan Konfigurasi').prop('disabled', false);
+    }
+  }
+}
 async function handleStatusMassal(e) {
   e.preventDefault(); let grp = $('#groupMassal').val();
   let confirmMsg = grp === "ALL" ? "Status SELURUH PEGAWAI akan diubah jadi HADIR. Lanjutkan?" : `Status seluruh pegawai di GROUP ${grp} akan diubah jadi HADIR. Lanjutkan?`;
@@ -622,3 +823,8 @@ async function handleHapusSemuaLog() {
       }
     }
   }
+  document.querySelectorAll('a[target="_blank"]').forEach(link => {
+  link.addEventListener('click', function(e) {
+    window.open(this.href, '_blank');
+  });
+});
