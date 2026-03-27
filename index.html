@@ -20,45 +20,49 @@
 
   <div class="wrapper">
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
     <aside id="sidebar" class="sidebar bg-slate-900 shadow-lg">
-      <div class="sidebar-header d-flex align-items-center justify-content-between p-4 border-bottom border-secondary border-opacity-25">
-        <div class="d-flex align-items-center gap-3">
-          <div class="icon-circle bg-primary text-white shadow-sm"><i class="fas fa-building"></i></div>
+      <div class="sidebar-header d-flex align-items-center justify-content-between p-3 border-bottom border-secondary border-opacity-25">
+        <div class="d-flex align-items-center gap-2">
+          <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 32px; height: 32px;">
+            <i class="fas fa-building small"></i>
+          </div>
           <div class="text-white">
-            <h6 class="mb-0 fw-bold tracking-wide">LPKA KUTOARJO</h6>
-            <span class="small text-white-50" style="font-size: 0.75rem;">Panel Absensi</span>
+            <h6 class="mb-0 fw-bold small">LPKA KUTOARJO</h6>
+            <p class="mb-0 text-white-50" style="font-size: 0.65rem;">Panel Absensi</p>
           </div>
         </div>
-        <button class="btn btn-sm btn-link text-white d-md-none" id="closeSidebar"><i class="fas fa-times fs-5"></i></button>
       </div>
 
-      <div class="sidebar-menu p-3 mt-2">
-        <p class="text-uppercase text-white-50 small fw-bold tracking-wide mb-2 px-3" style="font-size: 0.7rem;">Menu Utama</p>
-        <ul class="nav flex-column gap-1">
-          <li class="nav-item">
-            <a href="#" class="nav-link sidebar-link active" data-target="section-dashboard">
-              <i class="fas fa-home nav-icon"></i> Dashboard Statistik
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="#" class="nav-link sidebar-link" data-target="section-input">
-              <i class="fas fa-edit nav-icon"></i> Input Kehadiran
-            </a>
-          </li>
+      <div class="sidebar-menu overflow-y-auto pt-3">
+        <p class="text-uppercase text-white-50 fw-bold px-3 mb-1" style="font-size: 0.65rem;">Menu Utama</p>
+        <nav class="nav flex-column gap-0">
+          <a href="#" class="sidebar-link active" data-target="section-dashboard">
+            <i class="fas fa-home nav-icon"></i> Dashboard
+          </a>
+          <a href="#" class="sidebar-link" data-target="section-input">
+            <i class="fas fa-edit nav-icon"></i> Input Kehadiran
+          </a>
           
-          <p class="text-uppercase text-white-50 small fw-bold tracking-wide mb-2 mt-4 px-3" style="font-size: 0.7rem;">Manajemen Data</p>
-          <li class="nav-item">
-            <a href="#" class="nav-link sidebar-link" data-target="section-pegawai">
-              <i class="fas fa-users-cog nav-icon"></i> Kelola Pegawai & Group
-            </a>
-          </li>
-        </ul>
+          <p class="text-uppercase text-white-50 fw-bold px-3 mb-1 mt-3" style="font-size: 0.65rem;">Manajemen Data</p>
+          <a href="#" class="sidebar-link" data-target="section-pegawai">
+            <i class="fas fa-users-cog nav-icon"></i> Kelola Pegawai
+          </a>
+<a href="#" class="sidebar-link" data-target="section-database">
+  <i class="fas fa-database nav-icon"></i> Database Absensi(View)
+</a>
+          <p class="text-uppercase text-white-50 fw-bold px-3 mb-1 mt-3" style="font-size: 0.65rem;">Manajemen Cuti</p>
+          <a href="#" class="sidebar-link" data-target="section-cuti">
+            <i class="fas fa-calendar-check nav-icon"></i> Monitoring Cuti
+          </a>
+<a href="#" class="sidebar-link" data-target="section-database-cuti">
+  <i class="fas fa-database nav-icon"></i> Database Cuti (View)
+</a>
+        </nav>
       </div>
 
-      <div class="sidebar-footer p-4 border-top border-secondary border-opacity-25 text-center w-100 mt-auto">
-        <div class="badge bg-primary bg-opacity-25 text-primary rounded-pill px-3 py-2 w-100 border border-primary border-opacity-50">
-          <i class="fas fa-shield-alt me-1"></i> Admin Akses
+      <div class="sidebar-footer p-3 border-top border-secondary border-opacity-25 mt-auto">
+        <div class="badge bg-primary bg-opacity-10 text-primary w-100 py-2 border border-primary border-opacity-25" style="font-size: 0.7rem;">
+          <i class="fas fa-shield-alt me-1"></i> ADMIN ACCESS
         </div>
       </div>
     </aside>
@@ -192,31 +196,154 @@
           </div>
         </div>
 
-        <div id="section-input" class="content-section" style="display:none;">
-          <div class="row g-4 justify-content-center">
-            <div class="col-md-6">
-              <div class="card interactive-card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-bottom p-4"><h6 class="fw-bold mb-0 text-success"><i class="fas fa-users-cog me-2"></i>Set Status Massal by Group</h6></div>
-                <div class="card-body d-flex flex-column p-4">
-                  <p class="small text-muted mb-4">Ubah status absensi jadi HADIR secara serentak untuk satu group atau seluruh pegawai.</p>
-                  <form id="formStatusMassal" onsubmit="handleStatusMassal(event)" class="mt-auto">
-                    <div class="mb-3"><label class="form-label fw-bold">Tanggal</label><input type="date" class="form-control" id="tanggalMassal" required></div>
-                    <div class="mb-3"><label class="form-label fw-bold">Pilih Group</label><select class="form-select" id="groupMassal" required><option value="ALL">Semua Group (Seluruh Pegawai)</option></select></div>
-                    <div class="mb-4"><label class="form-label fw-bold">Status Massal</label><select class="form-select" id="statusMassal" required><option value="Hadir" class="fw-bold text-success" selected>Hadir</option></select></div>
-                    <button type="submit" class="btn btn-success w-100 rounded-pill shadow-sm py-2 fw-bold" id="btnStatusMassal"><i class="fas fa-check-double me-2"></i>Eksekusi Status Massal</button>
-                  </form>
+        
+<div id="section-input" class="content-section" style="display:none;">
+  <div class="container-fluid">
+    
+<ul class="nav nav-pills nav-fill mb-4 bg-white p-2 shadow-sm rounded-pill" id="inputTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active rounded-pill fw-bold text-primary" id="efektif-tab" data-bs-toggle="tab" data-bs-target="#tab-efektif" type="button" role="tab">
+          <i class="fas fa-calendar-alt me-2"></i>Hari Efektif
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link rounded-pill fw-bold text-success" id="massal-tab" data-bs-toggle="tab" data-bs-target="#tab-massal" type="button" role="tab">
+          <i class="fas fa-users-cog me-2"></i>Status Massal
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link rounded-pill fw-bold text-warning" id="individu-tab" data-bs-toggle="tab" data-bs-target="#tab-individu" type="button" role="tab">
+          <i class="fas fa-user-edit me-2"></i>Pengecualian Individu
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="inputTabContent">
+      
+      <div class="tab-pane fade show active" id="tab-efektif" role="tabpanel">
+        <div class="row justify-content-center">
+          <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm border-top border-primary border-4">
+              <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-3">
+                  <div class="icon-box bg-primary text-white rounded-3 p-3 me-3">
+                    <i class="fas fa-calendar-check fa-lg"></i>
+                  </div>
+                  <div>
+                    <h5 class="fw-bold mb-0 text-primary">Hari Kerja Efektif</h5>
+                    <small class="text-muted">Setting parameter bulanan sistem</small>
+                  </div>
                 </div>
+                <hr>
+                <form id="formHariEfektif" onsubmit="handleHariEfektif(event)">
+                  <div class="mb-3">
+                    <label class="form-label fw-bold small text-secondary">Pilih Group</label>
+                    <select class="form-select border-primary-subtle shadow-sm" id="groupEfektif" required>
+                      <option value="ALL">Semua Group (Global)</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold small text-secondary">Pilih Bulan</label>
+<select id="bulanEfektif" class="form-select border-primary-subtle shadow-sm" required>
+  <option value="" selected disabled>-- Pilih Bulan --</option>
+  <option value="01">Januari</option>
+  <option value="02">Februari</option>
+  <option value="03">Maret</option>
+  <option value="04">April</option>
+  <option value="05">Mei</option>
+  <option value="06">Juni</option>
+  <option value="07">Juli</option>
+  <option value="08">Agustus</option>
+  <option value="09">September</option>
+  <option value="10">Oktober</option>
+  <option value="11">November</option>
+  <option value="12">Desember</option>
+</select>
+                  </div>
+                  <div class="mb-4">
+                    <label class="form-label fw-bold small text-secondary">Jumlah Hari</label>
+                    <div class="input-group shadow-sm">
+                      <input type="number" class="form-control border-primary-subtle" id="jumlahHari" min="1" max="31" placeholder="22" required>
+                      <span class="input-group-text bg-primary text-white border-primary">Hari</span>
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow">
+                    <i class="fas fa-save me-2"></i>Simpan Konfigurasi
+                  </button>
+                </form>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
 
-            <div class="col-md-6">
-              <div class="card interactive-card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-bottom p-4"><h6 class="fw-bold mb-0 text-primary"><i class="fas fa-user-edit me-2"></i>Input Pengecualian Individu</h6></div>
-                <div class="card-body d-flex flex-column p-4">
-                  <p class="small text-muted mb-4">Catat izin, cuti, dinas luar, atau koreksi kehadiran untuk individu.</p>
-                  <form id="formAbsensi" onsubmit="handleAbsensiSubmit(event)" class="mt-auto">
-                    <div class="mb-3"><label class="form-label fw-bold">Tanggal</label><input type="date" class="form-control" id="tanggal" required></div>
-                    <div class="mb-3"><label class="form-label fw-bold">Pegawai</label><select class="form-select select-pegawai" id="nama" required style="width:100%;"></select></div>
+      <div class="tab-pane fade" id="tab-massal" role="tabpanel">
+        <div class="row justify-content-center">
+          <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm border-top border-success border-4">
+              <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-3">
+                  <div class="icon-box bg-success text-white rounded-3 p-3 me-3">
+                    <i class="fas fa-users-cog fa-lg"></i>
+                  </div>
+                  <div>
+                    <h5 class="fw-bold mb-0 text-success">Update Status Massal</h5>
+                    <small class="text-muted">Proses data berkelompok</small>
+                  </div>
+                </div>
+                <hr>
+                <form id="formStatusMassal" onsubmit="handleStatusMassal(event)">
+                  <div class="mb-3">
+                    <label class="form-label fw-bold small text-secondary">Tanggal</label>
+                    <input type="date" class="form-control border-success-subtle shadow-sm" id="tanggalMassal" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold small text-secondary">Target Group</label>
+                    <select class="form-select border-success-subtle shadow-sm" id="groupMassal" required>
+                      <option value="ALL">Seluruh Pegawai</option>
+                    </select>
+                  </div>
+                  <div class="mb-4">
+                    <label class="form-label fw-bold small text-secondary">Status yang Diterapkan</label>
+                    <select class="form-select border-success-subtle shadow-sm" id="statusMassal" required>
+                      <option value="Hadir" class="text-success fw-bold">HADIR</option>
+                      <option value="Libur" class="text-danger fw-bold">LIBUR</option>
+                    </select>
+                  </div>
+                  <button type="submit" class="btn btn-success w-100 rounded-pill py-2 fw-bold shadow">
+                    <i class="fas fa-bolt me-2"></i>Eksekusi Perubahan
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="tab-individu" role="tabpanel">
+        <div class="row justify-content-center">
+          <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm border-top border-warning border-4">
+              <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-3">
+                  <div class="icon-box bg-warning text-dark rounded-3 p-3 me-3">
+                    <i class="fas fa-user-edit fa-lg"></i>
+                  </div>
+                  <div>
+                    <h5 class="fw-bold mb-0 text-warning-emphasis">Input Pengecualian</h5>
+                    <small class="text-muted">Izin, Cuti, dan Revisi Perorangan</small>
+                  </div>
+                </div>
+                <hr>
+                <form id="formAbsensi" onsubmit="handleAbsensiSubmit(event)">
+                  <div class="mb-3">
+                    <label class="form-label fw-bold small text-secondary">Tanggal Efektif</label>
+                    <input type="date" class="form-control border-warning-subtle shadow-sm" id="tanggal" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold small text-secondary">Cari Nama Pegawai</label>
+                    <select class="form-select select-pegawai border-warning-subtle shadow-sm" id="nama" required></select>
+                  </div>
                     <div class="mb-3">
                       <label class="form-label fw-bold">Status Absen</label>
                       <select class="form-select" id="status" required>
@@ -226,75 +353,334 @@
                         <optgroup label="Kategori Lainnya"><option value="Dinas Luar">Dinas Luar</option><option value="Tanpa Keterangan">Tanpa Keterangan</option></optgroup>
                       </select>
                     </div>
-                    <div class="mb-4"><label class="form-label fw-bold">Keterangan / Jurnal</label><textarea class="form-control" id="keterangan" rows="1" placeholder="Masukkan detail izin..."></textarea></div>
-                    <button type="submit" class="btn btn-primary w-100 rounded-pill shadow-sm py-2 fw-bold" id="btnSubmitAbsen"><i class="fas fa-save me-2"></i>Simpan Kehadiran</button>
-                  </form>
-                </div>
+                  <div class="mb-4">
+                    <label class="form-label fw-bold small text-secondary">Keterangan / Jurnal</label>
+                    <textarea class="form-control border-warning-subtle shadow-sm" id="keterangan" rows="2"></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-warning w-100 rounded-pill py-2 fw-bold shadow text-dark">
+                    <i class="fas fa-save me-2"></i>Simpan Perubahan
+                  </button>
+                </form>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div id="section-pegawai" class="content-section" style="display:none;">
-          <div class="d-flex justify-content-end mb-4">
-             <button class="btn btn-outline-danger shadow-sm fw-bold rounded-pill px-4" onclick="handleResetAbsensi()"><i class="fas fa-radiation-alt me-2"></i>Reset Database Absensi</button>
-          </div>
+    </div>
+  </div>
+</div>
 
-          <div class="row g-4 mb-4">
-            <div class="col-xl-4 col-lg-5">
-              <div class="card interactive-card border-0 shadow-sm h-100">
-                <div class="card-header bg-white border-bottom p-4"><h6 class="fw-bold text-success mb-0"><i class="fas fa-user-plus me-2"></i>Register Pegawai Baru</h6></div>
-                <div class="card-body p-4">
-                  <form id="formPegawai" onsubmit="handlePegawaiSubmit(event)">
-                    <div class="mb-3"><label class="form-label fw-bold">Nama Lengkap</label><input type="text" class="form-control" id="namaBaru" required></div>
-                    <div class="mb-3"><label class="form-label fw-bold">Golongan</label><input type="text" class="form-control" id="golongan" list="listGolongan" required></div>
-                    <div class="mb-4"><label class="form-label fw-bold">Penempatan Group</label><input type="text" class="form-control" id="groupBaru" list="listGroup" placeholder="Opsional..."></div>
-                    <button type="submit" class="btn btn-success w-100 rounded-pill shadow-sm py-2 fw-bold" id="btnSubmitPegawai"><i class="fas fa-plus me-2"></i>Tambahkan</button>
-                  </form>
-                </div>
+        <div id="section-database" class="content-section" style="display:none;">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 15px;">
+          
+          <div class="card-header bg-dark py-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(45deg, #212529, #343a40);">
+            <div class="d-flex align-items-center">
+              <div class="icon-badge bg-primary text-white me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 10px;">
+                <i class="fas fa-database"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold mb-0 text-white">Database Absensi</h6>
+                <small class="text-white-50" style="font-size: 0.75rem;">Mode Pratinjau Sistem</small>
               </div>
             </div>
-            <div class="col-xl-8 col-lg-7">
-              <div class="card interactive-card border-0 shadow-sm h-100">
-                <div class="card-header bg-white p-4 border-bottom"><h6 class="fw-bold text-dark mb-0"><i class="fas fa-id-card me-2 text-info"></i>Database Master Pegawai</h6></div>
-                <div class="card-body p-0">
-                  <div class="table-responsive p-4">
-                    <table class="table table-hover w-100 align-middle text-center custom-table" id="tabelMasterPegawai">
-                      <thead class="table-light"><tr><th>No</th><th class="text-start">Nama Pegawai</th><th>Golongan</th><th>Group/Divisi</th><th>Aksi</th></tr></thead>
-                      <tbody id="masterPegawaiBody"></tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
+            
+            <div class="d-flex gap-2">
+              <button onclick="refreshDatabase()" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+              <a href="https://docs.google.com/spreadsheets/d/1LNnWEQYBIHqNHYP6-2-vkt0mnkRiKSx29cY3CAyNkfk/edit" 
+                 target="_blank" 
+                 rel="noopener noreferrer" 
+                 class="btn btn-info btn-sm rounded-pill fw-bold shadow-sm px-4 text-white">
+                <i class="fas fa-external-link-alt me-2"></i>Buka di Tab Baru
+              </a>
             </div>
           </div>
           
-          <div class="row">
-            <div class="col-12">
-              <div class="card interactive-card border-0 shadow-sm">
-                <div class="card-header bg-slate-800 text-white p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                  <h6 class="fw-bold mb-0"><i class="fas fa-layer-group me-2 text-warning"></i>Manajemen Organisasi Group</h6>
-                  <button class="btn btn-warning btn-sm fw-bold rounded-pill shadow-sm px-4" onclick="bukaModalBuatGroup()"><i class="fas fa-plus me-1"></i>Bentuk Group Baru</button>
-                </div>
-                <div class="card-body p-4">
-                  <div class="row mb-4">
-                    <div class="col-md-5">
-                      <label class="form-label fw-bold text-muted small">FILTER ANGGOTA BERDASARKAN GROUP:</label>
-                      <select class="form-select shadow-sm border-primary" id="searchGroup" onchange="tampilkanAnggotaGroup()"><option value="">-- Silakan Pilih Group --</option></select>
-                    </div>
+          <div class="card-body p-0" style="height: 700px; background: #f8f9fa;">
+            <iframe 
+              id="frame-database"
+              src="https://docs.google.com/spreadsheets/d/1LNnWEQYBIHqNHYP6-2-vkt0mnkRiKSx29cY3CAyNkfk/preview?rm=minimal&chrome=false&widget=true" 
+              width="100%" 
+              height="100%" 
+              frameborder="0" 
+              style="border: none;"
+              loading="lazy"
+              allowfullscreen>
+            </iframe>
+          </div>
+          
+          <div class="card-footer bg-white border-0 py-3 text-center">
+            <p class="text-muted small mb-0">
+              <i class="fas fa-info-circle me-1 text-info"></i> 
+              Data tersinkronisasi otomatis dengan Google Sheets. Gunakan scroll di dalam tabel untuk melihat baris lainnya.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="section-cuti" class="content-section" style="display:none;">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 15px;">
+          
+          <div class="card-header py-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(45deg, #e67e22, #d35400);">
+            <div class="d-flex align-items-center">
+              <div class="icon-badge bg-white me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 10px; color: #d35400;">
+                <i class="fas fa-calendar-check"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold mb-0 text-white">Monitoring Cuti Pegawai</h6>
+                <small class="text-white-50" style="font-size: 0.75rem;">LPKA Kutoarjo - Rekapitulasi Izin & Cuti</small>
+              </div>
+            </div>
+            
+            <div class="d-flex gap-2">
+              <button onclick="refreshCuti()" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+              <a href="https://cekcutiku.netlify.app/" 
+                 target="_blank" 
+                 rel="noopener noreferrer" 
+                 class="btn btn-warning btn-sm rounded-pill fw-bold shadow-sm px-4 text-dark">
+                <i class="fas fa-user-clock"></i>Monitoring Cuti
+              </a>
+            </div>
+          </div>
+          
+          <div class="card-body p-0" style="height: 600px; background: #f8f9fa;">
+            <iframe 
+              id="frame-cuti"
+              src="https://cekcutiku.netlify.app/"
+              width="100%" 
+              height="100%" 
+              frameborder="0" 
+              style="border: none;"
+              loading="lazy"
+              allowfullscreen>
+            </iframe>
+          </div>
+          
+          <div class="card-footer bg-white border-0 py-3">
+            <div class="row align-items-center">
+              <div class="col-md-8">
+                <p class="text-muted small mb-0">
+                  <i class="fas fa-info-circle me-1 text-warning"></i> 
+                  Menampilkan data real-time dari formulir pengajuan cuti. Pastikan status <strong>"REVISI"</strong> telah divalidasi oleh atasan.
+                </p>
+              </div>
+              <div class="col-md-4 text-md-end">
+                <span class="badge bg-light text-dark rounded-pill border">
+                  <i class="fas fa-clock me-1 text-primary"></i> Auto-Sync Aktif
+                </span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="section-pegawai" class="content-section" style="display:none;">
+  <div class="container-fluid">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="fw-bold mb-0 text-dark"><i class="fas fa-users-cog me-2"></i>Manajemen SDM</h4>
+      <button class="btn btn-outline-danger shadow-sm fw-bold rounded-pill px-4 btn-sm" onclick="handleResetAbsensi()">
+        <i class="fas fa-radiation-alt me-2"></i>Reset Database Absensi
+      </button>
+    </div>
+
+    <ul class="nav nav-pills mb-4 bg-white p-2 shadow-sm rounded-pill" id="pegawaiTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active rounded-pill fw-bold px-4" id="kelola-pegawai-tab" data-bs-toggle="tab" data-bs-target="#tab-kelola-pegawai" type="button" role="tab">
+          <i class="fas fa-user-tie me-2"></i>Kelola Pegawai
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link rounded-pill fw-bold px-4" id="kelola-group-tab" data-bs-toggle="tab" data-bs-target="#tab-kelola-group" type="button" role="tab">
+          <i class="fas fa-layer-group me-2"></i>Kelola Group
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="pegawaiTabContent">
+      
+      <div class="tab-pane fade show active" id="tab-kelola-pegawai" role="tabpanel">
+        <div class="row g-4">
+          <div class="col-xl-4 col-lg-5">
+            <div class="card border-0 shadow-sm border-top border-success border-4 h-100">
+              <div class="card-header bg-white border-bottom p-4">
+                <h6 class="fw-bold text-success mb-0"><i class="fas fa-user-plus me-2"></i>Register Pegawai Baru</h6>
+              </div>
+              <div class="card-body p-4">
+                <form id="formPegawai" onsubmit="handlePegawaiSubmit(event)">
+                  <div class="mb-3">
+                    <label class="form-label fw-bold small text-muted">Nama Lengkap</label>
+                    <input type="text" class="form-control border-success-subtle" id="namaBaru" placeholder="Masukkan nama..." required>
                   </div>
-                  <div class="table-responsive border rounded-3 overflow-hidden">
-                    <table class="table table-hover w-100 align-middle text-center custom-table mb-0">
-                      <thead class="table-light"><tr><th width="5%">No</th><th class="text-start">Nama Pegawai</th><th width="20%">Golongan</th><th width="25%">Kontrol Keanggotaan</th></tr></thead>
-                      <tbody id="bodyAnggotaGroup"><tr><td colspan="4" class="text-muted py-5"><i class="fas fa-info-circle me-2"></i>Pilih group pada dropdown di atas untuk melihat rincian anggota.</td></tr></tbody>
-                    </table>
+                  <div class="mb-3">
+                    <label class="form-label fw-bold small text-muted">Golongan</label>
+                    <input type="text" class="form-control border-success-subtle" id="golongan" list="listGolongan" placeholder="Pilih/Ketik Golongan..." required>
                   </div>
+                  <div class="mb-4">
+                    <label class="form-label fw-bold small text-muted">Penempatan Group</label>
+                    <input type="text" class="form-control border-success-subtle" id="groupBaru" list="listGroup" placeholder="Opsional...">
+                  </div>
+                  <button type="submit" class="btn btn-success w-100 rounded-pill shadow-sm py-2 fw-bold" id="btnSubmitPegawai">
+                    <i class="fas fa-plus me-2"></i>Tambahkan Pegawai
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-8 col-lg-7">
+            <div class="card border-0 shadow-sm h-100">
+              <div class="card-header bg-white p-4 border-bottom d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold text-dark mb-0"><i class="fas fa-id-card me-2 text-info"></i>Database Master Pegawai</h6>
+                <span class="badge bg-light text-dark border rounded-pill fw-normal">Total: <span id="countPegawai">0</span></span>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive p-4">
+                  <table class="table table-hover w-100 align-middle text-center custom-table" id="tabelMasterPegawai">
+                    <thead class="table-light">
+                      <tr>
+                        <th>No</th>
+                        <th class="text-start">Nama Pegawai</th>
+                        <th>Golongan</th>
+                        <th>Group/Divisi</th>
+                        <th>Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody id="masterPegawaiBody"></tbody>
+                  </table>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
+      <div class="tab-pane fade" id="tab-kelola-group" role="tabpanel">
+        <div class="row">
+          <div class="col-12">
+            <div class="card border-0 shadow-sm border-top border-warning border-4">
+              <div class="card-header bg-white p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 border-bottom">
+                <div>
+                  <h6 class="fw-bold mb-0 text-warning-emphasis"><i class="fas fa-layer-group me-2"></i>Manajemen Organisasi Group</h6>
+                  <small class="text-muted">Kelola struktur divisi dan anggota didalamnya</small>
+                </div>
+                <button class="btn btn-warning btn-sm fw-bold rounded-pill shadow-sm px-4" onclick="bukaModalBuatGroup()">
+                  <i class="fas fa-plus me-1"></i>Bentuk Group Baru
+                </button>
+              </div>
+              <div class="card-body p-4">
+                <div class="row mb-4">
+                  <div class="col-md-5">
+                    <div class="p-3 bg-light rounded-3 border">
+                      <label class="form-label fw-bold text-dark small">FILTER ANGGOTA BERDASARKAN GROUP:</label>
+                      <select class="form-select shadow-sm border-warning" id="searchGroup" onchange="tampilkanAnggotaGroup()">
+                        <option value="">-- Silakan Pilih Group --</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="table-responsive border rounded-3 overflow-hidden">
+                  <table class="table table-hover w-100 align-middle text-center custom-table mb-0">
+                    <thead class="table-light">
+                      <tr>
+                        <th width="5%">No</th>
+                        <th class="text-start">Nama Pegawai</th>
+                        <th width="20%">Golongan</th>
+                        <th width="25%">Kontrol Keanggotaan</th>
+                      </tr>
+                    </thead>
+                    <tbody id="bodyAnggotaGroup">
+                      <tr>
+                        <td colspan="4" class="text-muted py-5">
+                          <i class="fas fa-info-circle me-2"></i>Pilih group pada dropdown di atas untuk melihat rincian anggota.
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div> </div>
+</div>
+
+<div id="section-database-cuti" class="content-section" style="display:none;">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 15px;">
+          
+          <div class="card-header bg-dark py-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(45deg, #212529, #343a40);">
+            <div class="d-flex align-items-center">
+              <div class="icon-badge bg-primary text-white me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 10px;">
+                <i class="fas fa-database"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold mb-0 text-white">Database Cuti (Read Only)</h6>
+                <small class="text-white-50" style="font-size: 0.75rem;">Sinkronisasi Real-time</small>
+              </div>
+            </div>
+            
+            <div class="d-flex gap-2">
+              <button onclick="refreshDatabase()" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+              <a href="https://docs.google.com/spreadsheets/d/1vBCMqy6NCOkgxbGsOVQIjjnahLAW9VZHFjcfwgLuAnU/edit?gid=1245161159" 
+                 target="_blank" 
+                 class="btn btn-info btn-sm rounded-pill fw-bold shadow-sm px-4 text-white">
+                <i class="fas fa-external-link-alt me-2"></i>Buka Full View
+              </a>
+            </div>
+          </div>
+          
+          <div class="card-body p-0" style="height: 700px; background: #f8f9fa;">
+            <iframe 
+              id="frame-database"
+              /* MODE PREVIEW AKTIF: Menggunakan rm=minimal untuk menghilangkan UI Google */
+              src="https://docs.google.com/spreadsheets/d/1vBCMqy6NCOkgxbGsOVQIjjnahLAW9VZHFjcfwgLuAnU/preview?gid=1245161159&rm=minimal" 
+              width="100%" 
+              height="100%" 
+              frameborder="0" 
+              style="border: none;"
+              loading="lazy"
+              allowfullscreen>
+            </iframe>
+          </div>
+          
+          <div class="card-footer bg-white border-0 py-3 text-center">
+            <p class="text-muted small mb-0">
+              <i class="fas fa-lock me-1 text-warning"></i> 
+              Mode hanya baca aktif. Perubahan data hanya dapat dilakukan melalui formulir input.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
         <div id="section-logs" class="content-section" style="display:none;">
             <div class="card interactive-card border-0 shadow-sm mb-4">
               <div class="card-header bg-white p-4 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3">
