@@ -70,6 +70,51 @@
   .sidebar-link.active { color: #ffffff; background-color: var(--primary); box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3); }
   
   /* ==================== MAIN CONTENT ==================== */
+  /* Styling dasar untuk Nav Pill */
+  #inputTab .nav-link {
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+  }
+
+  /* Warna saat tombol HOVER (kursor di atasnya) */
+  #inputTab .nav-link:hover {
+    background-color: #f0f7ff; /* Biru sangat muda */
+    color: #0d6efd !important;
+  }
+
+  /* Warna saat tombol AKTIF (setelah diklik) */
+  #inputTab .nav-link.active {
+    background-color: #e7f1ff !important; /* Biru muda Bootstrap soft */
+    color: #0d6efd !important; /* Teks tetap biru tua agar kontras */
+    border: 1px solid #cfe2ff; /* Border halus agar terlihat menyatu */
+    box-shadow: 0 2px 4px rgba(13, 110, 253, 0.1);
+  }
+
+  /* Menghilangkan outline default saat diklik */
+  .nav-pills .nav-link:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  #pegawaiTab .nav-link.active {
+    background-color: #f8f9fa !important;
+    color: #0d6efd !important;
+    border: 1px solid #dee2e6;
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.05);
+  }
+  
+  #pegawaiTab .nav-link:not(.active) {
+    color: #6c757d;
+  }
+
+  /* Animasi halus saat pindah tab */
+  .tab-pane {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
   .main-content {
     width: calc(100% - var(--sidebar-width));
     min-height: 100vh;
