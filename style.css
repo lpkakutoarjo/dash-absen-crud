@@ -124,6 +124,9 @@
   }
   .main-content.active { width: 100%; }
   
+  #chartAllBulan {
+  display: block !important;
+}
   /* ==================== CARDS & STATS ==================== */
   .interactive-card {
     border-radius: 16px;
@@ -178,3 +181,57 @@
     }
     .sidebar-overlay.active { display: block; }
   }
+  /* --- UI/UX Enhancements --- */
+
+/* Gradient Khusus untuk Card Total Pegawai */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%) !important;
+}
+
+/* Tambahan Efek Card */
+.interactive-card, .stat-card {
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03) !important;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08) !important;
+}
+
+.interactive-card:hover {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Glassmorphism Icon Stat Backgrounds */
+.bg-success.bg-opacity-10 {
+  background-color: rgba(16, 185, 129, 0.12) !important;
+}
+.bg-warning.bg-opacity-10 {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+}
+.stat-icon {
+  transition: all 0.3s ease;
+}
+.stat-card:hover .stat-icon {
+  transform: scale(1.1);
+}
+
+/* Animasi Gradient Badge */
+.bg-gradient {
+  background-size: 200% auto;
+  transition: 0.5s;
+}
+.bg-gradient:hover {
+  background-position: right center;
+}
+
+/* Tweak Header Data Rekapan */
+#filterBulanRekapan {
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+#filterBulanRekapan:hover, #filterBulanRekapan:focus {
+  border-color: var(--primary);
+  background-color: white !important;
+}
