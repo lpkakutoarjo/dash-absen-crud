@@ -211,7 +211,16 @@ function checkAndRenderRekapan() {
 // DATA PROCESSING & POPULATION
 // ==========================================
 function applyFilterBulan() {
-  let bulanTerpilih = document.getElementById('filterBulanRekapan').value;
+  let selectBulan = document.getElementById('filterBulanRekapan');
+  let bulanTerpilih = selectBulan.value;
+  let teksBulanTerpilih = selectBulan.options[selectBulan.selectedIndex].text;
+  
+  // UPDATE LABEL BULAN DINAMIS DI CARD
+  let labelBulanStat = document.getElementById('labelBulanStat');
+  if(labelBulanStat) {
+    labelBulanStat.innerHTML = `<i class="fas fa-calendar-alt me-1"></i> ${bulanTerpilih === "ALL" ? "Sepanjang Tahun" : teksBulanTerpilih}`;
+  }
+
   let currentYear = new Date().getFullYear();
   let filteredData = [];
   
@@ -248,12 +257,10 @@ function applyFilterBulan() {
       
       let jmlTidakHadir = jmlCuti + jmlDL + jmlTK;
       
-      // --- PERBAIKAN PENGAMBILAN HARI EFEKTIF PER PEGAWAI ---
       let hariEfektif = 0;
       if (bulanTerpilih === "ALL") {
         hariEfektif = pegawai.hariEfektif || pegawai["HARI EFEKTIF"] || pegawai.HariEfektif || 0; 
       } else {
-        // Deteksi secara spesifik berdasarkan nama pegawai di bulan tersebut
         if (globalHariEfektifBulanan[formatBulan] && globalHariEfektifBulanan[formatBulan][pegawai.nama]) {
           hariEfektif = globalHariEfektifBulanan[formatBulan][pegawai.nama];
         } else {
@@ -274,9 +281,10 @@ function applyFilterBulan() {
     });
   }
 
+  // Animasi angka tanpa menimpa elemen span/text HTML di dalamnya
   animateValue("statTotalPegawai", 0, filteredData.length, 500);
-  animateValue("statTotalHadir", 0, totalKeseluruhanHadir, 500, ' <span class="fs-6 text-muted fw-normal">Hari</span>');
-  animateValue("statTotalAbsen", 0, totalKeseluruhanAbsen, 500, ' <span class="fs-6 text-muted fw-normal">Hari</span>');
+  document.getElementById("statTotalHadir").innerHTML = `${totalKeseluruhanHadir} <span class="fs-6 text-muted fw-normal">Hari</span>`;
+  document.getElementById("statTotalAbsen").innerHTML = `${totalKeseluruhanAbsen} <span class="fs-6 text-muted fw-normal">Hari</span>`;
 
   populateTabelRekapan(filteredData);
 }
@@ -554,6 +562,9 @@ if (typeof ChartDataLabels !== 'undefined') {
       }
     }
   });
+  if (typeof renderChartBulanKeseluruhan === 'function') {
+      renderChartBulanKeseluruhan();
+  }
 }
 // ==========================================
 // CRUD ACTIONS (POST)
@@ -576,33 +587,62 @@ function showToast(message, type) {
   setTimeout(() => { if(container.lastChild) { container.lastChild.style.opacity='0'; setTimeout(()=>container.lastChild.remove(),300); } }, 4000);
 }
 
+// 1. HANDLE ABSENSI INDIVIDUAL (TAB PENGECUALIAN)
 async function handleAbsensiSubmit(e) {
   e.preventDefault();
-  let btn = $('#btnSubmitAbsen'); btn.html('<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...').prop('disabled', true);
-  let obj = { tanggal: $('#tanggal').val(), nama: $('#nama').val(), status: $('#status').val(), keterangan: $('#keterangan').val() };
+  
+  // Ambil referensi tombol
+  let btn = $('#btnSubmitAbsen'); 
+  // Simpan konten asli agar bisa dikembalikan dengan tepat (termasuk ikon)
+  let originalContent = '<i class="fas fa-save me-2"></i>Simpan Perubahan';
+  
+  // AKTIFKAN LOADING
+  btn.html('<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...').prop('disabled', true);
+  
+  let obj = { 
+    tanggal: $('#tanggal').val(), 
+    nama: $('#nama').val(), 
+    status: $('#status').val(), 
+    keterangan: $('#keterangan').val() 
+  };
+  
   try {
     let res = await fetchPost('submitAbsensi', obj);
-    showToast(res.message, res.status); $('#formAbsensi')[0].reset(); $('#nama').val(null).trigger('change');
-    if(res.status === 'success') loadDataServer(true);
-  } catch(err) { showToast(err.message, "error"); }
-  btn.html('<i class="fas fa-save me-2"></i>Simpan Kehadiran').prop('disabled', false);
+    showToast(res.message, res.status); 
+    
+    // Logika reset form tetap dipertahankan
+    if(res.status === 'success') {
+      $('#formAbsensi')[0].reset(); 
+      $('#nama').val(null).trigger('change');
+      loadDataServer(true);
+    }
+  } catch(err) { 
+    showToast(err.message, "error"); 
+  } finally {
+    // KEMBALIKAN TOMBOL (Tanpa mengurangi kode sebelumnya)
+    btn.html(originalContent).prop('disabled', false);
+  }
 }
 
+// 2. HANDLE HARI EFEKTIF
 async function handleHariEfektif(e) {
   e.preventDefault();
   
   const grp = $('#groupEfektif').val();
-  const namaBulan = $('#bulanEfektif option:selected').text(); // Mengambil teks "Januari", "Februari", dll
+  const namaBulan = $('#bulanEfektif option:selected').text();
   const jmlHari = $('#jumlahHari').val();
   
   let confirmMsg = `Update hari efektif di TAB [${namaBulan}] untuk Group: ${grp}?`;
 
   if (confirm(confirmMsg)) {
     const btn = $('#btnSubmitEfektif');
-    btn.html('<i class="fas fa-spinner fa-spin me-2"></i>Membuka Tab...').prop('disabled', true);
+    let originalContent = '<i class="fas fa-save me-2"></i>Simpan Konfigurasi';
+    
+    // AKTIFKAN LOADING
+    btn.html('<i class="fas fa-spinner fa-spin me-2"></i>Memproses...').prop('disabled', true);
 
     const obj = {
-      targetSheet: namaBulan, // Nama Tab yang akan dituju
+      targetSheet: namaBulan,
       group: grp,
       hariEfektif: parseInt(jmlHari)
     };
@@ -617,22 +657,45 @@ async function handleHariEfektif(e) {
     } catch (err) {
       showToast(err.message, "error");
     } finally {
-      btn.html('<i class="fas fa-save me-2"></i>Simpan Konfigurasi').prop('disabled', false);
+      // KEMBALIKAN TOMBOL
+      btn.html(originalContent).prop('disabled', false);
     }
   }
 }
+
+// 3. HANDLE STATUS MASSAL
 async function handleStatusMassal(e) {
-  e.preventDefault(); let grp = $('#groupMassal').val();
+  e.preventDefault(); 
+  let grp = $('#groupMassal').val();
   let confirmMsg = grp === "ALL" ? "Status SELURUH PEGAWAI akan diubah jadi HADIR. Lanjutkan?" : `Status seluruh pegawai di GROUP ${grp} akan diubah jadi HADIR. Lanjutkan?`;
+  
   if(confirm(confirmMsg)) {
-    let btn = $('#btnStatusMassal'); btn.html('<i class="fas fa-spinner fa-spin me-2"></i>Memproses...').prop('disabled', true);
-    let obj = { tanggal: $('#tanggalMassal').val(), group: grp, status: $('#statusMassal').val(), keterangan: "" };
+    let btn = $('#btnStatusMassal'); 
+    let originalContent = '<i class="fas fa-bolt me-2"></i>Eksekusi Perubahan';
+    
+    // AKTIFKAN LOADING
+    btn.html('<i class="fas fa-spinner fa-spin me-2"></i>Memproses...').prop('disabled', true);
+    
+    let obj = { 
+      tanggal: $('#tanggalMassal').val(), 
+      group: grp, 
+      status: $('#statusMassal').val(), 
+      keterangan: "" 
+    };
+
     try {
       let res = await fetchPost('setStatusMassal', obj);
-      showToast(res.message, res.status); $('#formStatusMassal')[0].reset();
-      if(res.status === 'success') loadDataServer(true);
-    } catch(err) { showToast(err.message, "error"); }
-    btn.html('<i class="fas fa-check-double me-2"></i>Eksekusi Status Massal').prop('disabled', false);
+      showToast(res.message, res.status); 
+      if(res.status === 'success') {
+        $('#formStatusMassal')[0].reset();
+        loadDataServer(true);
+      }
+    } catch(err) { 
+      showToast(err.message, "error"); 
+    } finally {
+      // KEMBALIKAN TOMBOL
+      btn.html(originalContent).prop('disabled', false);
+    }
   }
 }
 
