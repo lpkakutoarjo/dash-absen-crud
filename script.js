@@ -891,3 +891,28 @@ async function handleHapusSemuaLog() {
     window.open(this.href, '_blank');
   });
 });
+
+function refreshDatabase(e) {
+  const btn = $('#btnRefreshDb');
+  const frame = $('#frame-database');
+  const originalHtml = '<i class="fas fa-sync-alt"></i>';
+  
+  // Aktifkan Spinner pada tombol
+  btn.html('<i class="fas fa-sync-alt fa-spin"></i>').prop('disabled', true);
+  
+  // Reload Iframe
+  const currentSrc = frame.attr('src');
+  frame.attr('src', ''); // Kosongkan dulu sebentar
+  
+  // Gunakan timeout kecil agar transisi reload terasa
+  setTimeout(() => {
+    frame.attr('src', currentSrc);
+    
+    // Kembalikan tombol setelah proses selesai
+    setTimeout(() => {
+      btn.html(originalHtml).prop('disabled', false);
+      if (typeof showToast === "function") {
+        showToast("Database Absensi telah dimuat ulang", "info");
+      }
+    }, 1000);
+  }, 100);
