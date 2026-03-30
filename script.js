@@ -891,7 +891,9 @@ async function handleHapusSemuaLog() {
     window.open(this.href, '_blank');
   });
 });
-
+/**
+ * Memuat ulang iframe database dan memberikan feedback visual
+ */
 function refreshDatabase(e) {
   const btn = $('#btnRefreshDb');
   const frame = $('#frame-database');
@@ -916,3 +918,4 @@ function refreshDatabase(e) {
       }
     }, 1000);
   }, 100);
+}
