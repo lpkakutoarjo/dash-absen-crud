@@ -176,28 +176,124 @@ async function loadDataServer(isSilent = false) {
   }
 }
   
-  // Perbaikan pada bagian Registrasi Plugin di renderChartBulanKeseluruhan
-  function renderChartBulanKeseluruhan() {
-    // ... kode persiapan data ...
-    
-    const ctx = document.getElementById('chartAllBulan').getContext('2d');
-    if(chartAll) chartAll.destroy(); 
-    
-    // Periksa apakah library plugin tersedia sebelum digunakan
-    const plugins = [];
-    if (typeof ChartDataLabels !== 'undefined') {
-      plugins.push(ChartDataLabels);
+function renderChartBulanKeseluruhan() {
+  const selectBulan = document.getElementById('selectBulanGlobal');
+  if (!selectBulan) return;
+
+  let bulanTerpilih = selectBulan.value;
+  let currentYear = new Date().getFullYear(); 
+  let formatBulan = `${currentYear}-${bulanTerpilih}`;
+  let mapData = {};
+
+  // 1. Mapping Nama Bulan (Definisikan di awal)
+  const shortMonths = {
+    "01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr", 
+    "05": "Mei", "06": "Jun", "07": "Jul", "08": "Ags", 
+    "09": "Sep", "10": "Okt", "11": "Nov", "12": "Des"
+  };
+
+  // 2. Pengumpulan Data dari globalLogs
+  globalLogs.forEach(log => {
+    let isMatch = (bulanTerpilih === "ALL" || log.bulan === formatBulan);
+    if(isMatch && log.status !== "LIBUR") {
+      if(!mapData[log.bulan]) { 
+        mapData[log.bulan] = {
+          "Hadir": 0, "Cuti Tahunan": 0, "Cuti Melahirkan": 0, "Cuti Sakit": 0, 
+          "Cuti Besar": 0, "Cuti Diluar Tanggungan Negara": 0, 
+          "Cuti Alasan Penting": 0, "Cuti Bersama": 0, "Dinas Luar": 0, "Tanpa Keterangan": 0
+        }; 
+      }
+      let st = (log.status || "").toUpperCase();
+      if(st === "HADIR") mapData[log.bulan]["Hadir"]++;
+      else if(st === "CUTI TAHUNAN") mapData[log.bulan]["Cuti Tahunan"]++;
+      else if(st === "CUTI MELAHIRKAN") mapData[log.bulan]["Cuti Melahirkan"]++;
+      else if(st === "CUTI SAKIT") mapData[log.bulan]["Cuti Sakit"]++;
+      else if(st === "CUTI BESAR") mapData[log.bulan]["Cuti Besar"]++;
+      else if(st === "CUTI DILUAR TANGGUNGAN NEGARA") mapData[log.bulan]["Cuti Diluar Tanggungan Negara"]++;
+      else if(st === "CUTI ALASAN PENTING") mapData[log.bulan]["Cuti Alasan Penting"]++;
+      else if(st === "DINAS LUAR" || st === "DL") mapData[log.bulan]["Dinas Luar"]++;
+      else if(st === "TANPA KETERANGAN" || st === "TK") mapData[log.bulan]["Tanpa Keterangan"]++;
+      else if(st === "CUTI BERSAMA") mapData[log.bulan]["Cuti Bersama"]++;
     }
+  });
+
+  // 3. Menyiapkan Labels (Kunci Asli)
+  let labelsOriginal = Object.keys(mapData).sort(); 
   
-    chartAll = new Chart(ctx, {
-      type: 'bar',
-      data: { /* ... data ... */ },
-      plugins: plugins, // Gunakan array plugin yang sudah dicek
-      options: {
-          // ... opsi grafik ...
+  // 4. MENGUBAH LABEL KE FORMAT 3 KARAKTER (PASTI BERHASIL)
+  let labelsNamaBulan = labelsOriginal.map(l => {
+    // Ambil bagian bulan saja (misal "2026-03" -> "03" atau "03" -> "03")
+    let kodeBulan = l.includes('-') ? l.split('-')[1] : l;
+    // Ambil mapping, jika tidak ada tampilkan kode aslinya
+    return shortMonths[kodeBulan] || kodeBulan;
+  });
+
+  // 5. Menyiapkan Datasets
+  let datasets = [];
+  if (typeof statusKeys !== 'undefined') {
+    statusKeys.forEach(key => {
+      // Kita gunakan labelsOriginal (angka) untuk map data agar tidak undefined
+      let dataArray = labelsOriginal.map(b => mapData[b][key] || 0);
+      if (dataArray.some(val => val > 0)) {
+        datasets.push({ 
+          label: key, 
+          data: dataArray, 
+          backgroundColor: colorMap[key] || '#cccccc', 
+          borderRadius: 4, 
+          barPercentage: 0.8 
+        });
       }
     });
   }
+
+  // 6. Rendering Grafik
+  const canvas = document.getElementById('chartAllBulan');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  
+  if(window.chartAll) window.chartAll.destroy();
+  if (typeof ChartDataLabels !== 'undefined') Chart.register(ChartDataLabels);
+
+  window.chartAll = new Chart(ctx, {
+    type: 'bar',
+    data: { 
+      labels: labelsNamaBulan.length ? labelsNamaBulan : ['No Data'], 
+      datasets: datasets.length ? datasets : [{ label: 'Empty', data: [0], backgroundColor: '#eee' }] 
+    },
+    options: {
+      responsive: true, 
+      maintainAspectRatio: false, 
+      interaction: { mode: 'index', intersect: false },
+      animation: {
+        duration: 1200,
+        easing: 'easeOutQuart'
+      },
+      plugins: {
+        legend: { 
+          position: 'bottom', 
+          labels: { usePointStyle: true, boxWidth: 8, padding: 15, font: { family: "'Plus Jakarta Sans', sans-serif", size: 10 } } 
+        },
+        datalabels: { 
+          color: '#fff', 
+          font: { weight: 'bold', size: 9 }, 
+          formatter: (value) => value > 0 ? value : '' 
+        },
+        tooltip: { 
+          backgroundColor: 'rgba(255, 255, 255, 0.9)', 
+          titleColor: '#2c3e50', 
+          bodyColor: '#2c3e50', 
+          borderColor: '#e9ecef', 
+          borderWidth: 1 
+        }
+      },
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { font: { weight: 'bold' } } },
+        y: { stacked: true, border: { display: false }, grid: { color: '#f8f9fa' }, ticks: { precision: 0 } }
+      }
+    }
+  });
+}
+
 
 function checkAndRenderRekapan() {
   if (isRekapanLoaded && isLogsLoaded) {
@@ -245,7 +341,7 @@ function applyFilterBulan() {
     logsBulanIni.forEach(log => {
       let st = log.status.toUpperCase();
       
-      // Filter status kehadiran dan ketidakhadiran sesuai aturan baru
+      // Filter status kehadiran dan ketidakhadiran sesuai aturan
       if (st === "HADIR") {
         jmlHadir++;
       } else if (st === "DINAS LUAR" || st === "DL") {
@@ -253,17 +349,17 @@ function applyFilterBulan() {
       } else if (st === "TANPA KETERANGAN" || st === "TK") {
         jmlTK++;
       } else if (validCuti.includes(st)) {
-        jmlCuti++; // Hanya menghitung cuti yang ada di dalam array validCuti
+        jmlCuti++; 
       }
       
-      // Keterangan jurnal tetap direkam jika ada
+      // Keterangan jurnal direkam dan DITAMBAHKAN POIN (&bull;)
       if (log.keterangan && log.keterangan.trim() !== "") {
         let hariTgl = log.tanggal.split('-')[2]; 
-        notesBulanIni.push(`Tgl ${hariTgl}: <span class="text-dark">${log.keterangan}</span>`);
+        // Penambahan &bull; di awal string
+        notesBulanIni.push(`&bull; Tgl ${hariTgl}: <span class="text-dark">${log.keterangan}</span>`);
       }
     });
     
-    // Total Tidak Hadir hanya menjumlahkan (Cuti Valid + DL + TK)
     let jmlTidakHadir = jmlCuti + jmlDL + jmlTK;
     let hariEfektif = 0;
     
