@@ -478,6 +478,9 @@
             </div>
             
             <div class="d-flex gap-2">
+              <button onclick="refreshCuti()" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                <i class="fas fa-sync-alt"></i>
+              </button>
               <a href="https://cekcutiku.netlify.app/" 
                  target="_blank" 
                  rel="noopener noreferrer" 
@@ -710,6 +713,72 @@
     </div>
   </div>
 </div>
+
+<div id="section-input" class="content-section" style="display:none;">
+  <div class="tab-content">
+    
+    <div class="tab-pane fade show active" id="tab-efektif">
+      <div class="d-flex justify-content-center mt-4">
+        <button type="submit" form="formHariEfektif" class="btn btn-primary rounded-pill px-5 fw-bold shadow" id="btnSubmitEfektif">
+          <i class="fas fa-save me-2"></i>Simpan Konfigurasi
+        </button>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="tab-massal">
+      <div class="d-flex justify-content-center mt-4">
+        <button type="submit" form="formStatusMassal" class="btn btn-success rounded-pill px-5 fw-bold shadow" id="btnStatusMassal">
+          <i class="fas fa-bolt me-2"></i>Eksekusi Perubahan
+        </button>
+      </div>
+    </div>
+
+    <div class="tab-pane fade" id="tab-individu">
+      <div class="d-flex justify-content-center mt-4">
+        <button type="submit" form="formAbsensi" class="btn btn-warning rounded-pill px-5 fw-bold shadow text-dark" id="btnSubmitAbsen">
+          <i class="fas fa-save me-2"></i>Simpan Perubahan
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+        <div id="section-logs" class="content-section" style="display:none;">
+            <div class="card interactive-card border-0 shadow-sm mb-4">
+              <div class="card-header bg-white p-4 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <h6 class="fw-bold text-dark mb-0"><i class="fas fa-history text-primary me-2"></i>Riwayat Sistem & Log Aktivitas Dashboard</h6>
+                
+                <div>
+                  <button class="btn btn-outline-danger btn-sm rounded-pill px-3 me-2 shadow-sm fw-bold" onclick="handleHapusSemuaLog()">
+                    <i class="fas fa-trash-alt me-1"></i> Kosongkan Log
+                  </button>
+                  <button class="btn btn-outline-primary btn-sm rounded-pill px-3 shadow-sm fw-bold" onclick="loadDataServer(false)">
+                    <i class="fas fa-sync-alt me-1"></i> Refresh Log
+                  </button>
+                </div>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive p-4">
+                  <table id="tabelLogAktivitas" class="table table-hover align-middle custom-table w-100 text-center">
+                    <thead class="table-light">
+                      <tr>
+                        <th width="20%" class="text-start">Tanggal & Waktu</th>
+                        <th width="25%">Jenis Aktivitas</th>
+                        <th width="55%" class="text-start">Rincian Perubahan Data</th>
+                      </tr>
+                    </thead>
+                    <tbody id="logAktivitasBody">
+                      </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </div>
+  </div>
+
   <div class="modal fade" id="modalEdit" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg rounded-4">
