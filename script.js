@@ -1,5 +1,5 @@
 // URL Web App GAS Anda (TIDAK PERLU DIGANTI LAGI)
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbwdu4oNTb6RnUbHGp6-USl6sTLy3VoyYuIzSCaiV4pcUb78d28ZceJg4NXeg_v5W3_-/exec';
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbyf5b8HS6v8wF78gE2CCi8Lf68ifl37h2zgjl5GR0TCewkeY0zr7a9IfMI9xaDFutc/exec';
 let dataTableRekapan, dataTableMaster, dataTableLogs;
 let globalLogs = [], rawDataPegawai = [], systemLogsData = [];
 let chartAll, chartPersonal;
@@ -897,24 +897,18 @@ async function handlePegawaiSubmit(e) {
     showToast(res.message, res.status);
     $('#formPegawai')[0].reset();
     if(res.status === 'success') {
-  // Tambahkan baris baru ke baris terakhir tabel
-  let groupLabel = obj.group && obj.group !== "-" ? `<span class="badge bg-secondary">${obj.group}</span>` : "-";
-  let no = $('#masterPegawaiBody tr').length + 1;
-  let newRow = `
-    <tr>
-      <td>${no}</td>
-      <td class="text-start fw-bold">${obj.namaBaru}</td>
-      <td>${obj.golongan}</td>
-      <td>${groupLabel}</td>
-      <td class="text-center">
-        <button class="btn btn-sm btn-primary m-1 shadow-sm" onclick="bukaModalEdit('${obj.namaBaru}', '${obj.golongan}', '${obj.group}')"><i class="fas fa-edit"></i></button>
-        <button class="btn btn-sm btn-danger m-1 shadow-sm" onclick="hapusData('${obj.namaBaru}')"><i class="fas fa-trash-alt"></i></button>
-      </td>
-    </tr>
-  `;
-  $('#masterPegawaiBody').append(newRow); // baris terakhir
-  $('#countPegawai').text($('#masterPegawaiBody tr').length);
-}
+      // Ambil data terbaru dari server agar urutan nomor sesuai database
+      let response = await fetch(`${GAS_API_URL}?t=${new Date().getTime()}`);
+      let result = await response.json();
+      if (result.status === 'success') {
+        rawDataPegawai = result.data.rekapan;
+        populateDaftarPegawai(rawDataPegawai);
+        // Pindah ke halaman terakhir
+        let table = $('#tabelMasterPegawai').DataTable();
+        let lastPage = table.page.info().pages - 1;
+        table.page(lastPage).draw('page');
+      }
+    }
   } catch(err) { showToast(err.message, "error"); }
   btn.html('<i class="fas fa-plus me-2"></i>Tambahkan').prop('disabled', false);
 }
