@@ -888,12 +888,33 @@ async function handleStatusMassal(e) {
 }
 
 async function handlePegawaiSubmit(e) {
-  e.preventDefault(); let btn = $('#btnSubmitPegawai'); btn.html('<i class="fas fa-spinner fa-spin me-2"></i>Memproses...').prop('disabled', true);
+  e.preventDefault();
+  let btn = $('#btnSubmitPegawai');
+  btn.html('<i class="fas fa-spinner fa-spin me-2"></i>Memproses...').prop('disabled', true);
   let obj = { namaBaru: $('#namaBaru').val(), golongan: $('#golongan').val(), group: $('#groupBaru').val() };
   try {
     let res = await fetchPost('simpanPegawaiBaru', obj);
-    showToast(res.message, res.status); $('#formPegawai')[0].reset();
-    if(res.status === 'success') loadDataServer(true);
+    showToast(res.message, res.status);
+    $('#formPegawai')[0].reset();
+    if(res.status === 'success') {
+  // Tambahkan baris baru ke baris terakhir tabel
+  let groupLabel = obj.group && obj.group !== "-" ? `<span class="badge bg-secondary">${obj.group}</span>` : "-";
+  let no = $('#masterPegawaiBody tr').length + 1;
+  let newRow = `
+    <tr>
+      <td>${no}</td>
+      <td class="text-start fw-bold">${obj.namaBaru}</td>
+      <td>${obj.golongan}</td>
+      <td>${groupLabel}</td>
+      <td class="text-center">
+        <button class="btn btn-sm btn-primary m-1 shadow-sm" onclick="bukaModalEdit('${obj.namaBaru}', '${obj.golongan}', '${obj.group}')"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-sm btn-danger m-1 shadow-sm" onclick="hapusData('${obj.namaBaru}')"><i class="fas fa-trash-alt"></i></button>
+      </td>
+    </tr>
+  `;
+  $('#masterPegawaiBody').append(newRow); // baris terakhir
+  $('#countPegawai').text($('#masterPegawaiBody tr').length);
+}
   } catch(err) { showToast(err.message, "error"); }
   btn.html('<i class="fas fa-plus me-2"></i>Tambahkan').prop('disabled', false);
 }
@@ -919,7 +940,16 @@ async function hapusData(nama) {
     showToast(`Menghapus data ${nama}...`, 'info');
     try {
       let res = await fetchPost('hapusPegawai', nama);
-      showToast(res.message, res.status); if(res.status === 'success') loadDataServer(true);
+      showToast(res.message, res.status);
+      if (res.status === 'success') {
+        // Hapus baris dari tabel tanpa reload
+        $(`#masterPegawaiBody tr`).filter(function() {
+          return $(this).find('td:nth-child(2)').text().trim() === nama;
+        }).remove();
+        // Update jumlah pegawai
+        let count = $('#masterPegawaiBody tr').length;
+        $('#countPegawai').text(count);
+      }
     } catch(err) { showToast(err.message, "error"); }
   }
 }
