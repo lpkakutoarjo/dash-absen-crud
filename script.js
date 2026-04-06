@@ -455,6 +455,7 @@ function populateDaftarPegawai(data) {
   });
   
   if (currentSearch) dataTableMaster.search(currentSearch); dataTableMaster.page(currentPage).draw('page');
+    document.getElementById('countPegawai').innerText = data.length;
 }
 
 function populateDropdownPegawai(data) {
