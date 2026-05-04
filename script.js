@@ -1,5 +1,5 @@
 // URL Web App GAS Anda (TIDAK PERLU DIGANTI LAGI)
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbyf5b8HS6v8wF78gE2CCi8Lf68ifl37h2zgjl5GR0TCewkeY0zr7a9IfMI9xaDFutc/exec';
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxUATatrCe-wqQTFNNhXvhx7Gzl5mUSuCUEcIbHgEzYi1oDtiF5h9LXnduLwKvfwogE/exec';
 let dataTableRekapan, dataTableMaster, dataTableLogs;
 let globalLogs = [], rawDataPegawai = [], systemLogsData = [];
 let chartAll, chartPersonal;
