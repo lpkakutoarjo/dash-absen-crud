@@ -1,14 +1,83 @@
 // URL Web App GAS Anda (TIDAK PERLU DIGANTI LAGI)
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbxUATatrCe-wqQTFNNhXvhx7Gzl5mUSuCUEcIbHgEzYi1oDtiF5h9LXnduLwKvfwogE/exec';
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbyf5b8HS6v8wF78gE2CCi8Lf68ifl37h2zgjl5GR0TCewkeY0zr7a9IfMI9xaDFutc/exec';
 let dataTableRekapan, dataTableMaster, dataTableLogs;
 let globalLogs = [], rawDataPegawai = [], systemLogsData = [];
 let chartAll, chartPersonal;
 let isRekapanLoaded = false, isLogsLoaded = false;
 
-$(document).ready(function() {
-    initUI();
-    loadDataServer(); // Panggil data pertama kali
+// Fungsi untuk melakukan Hashing PIN
+async function hashPIN(pin) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(pin);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+const CORRECT_PIN_HASH = "cd4b0bba7f67328dcff29180fb217d06f0d3a43a95ed32d175797b60e3216f83";
+
+async function checkAccessPin() {
+  // Cek apakah admin sudah login di sesi ini (sesi hilang jika tab/browser ditutup)
+  if (sessionStorage.getItem('admin_authenticated') === 'true') {
+      initUI();
+      loadDataServer(); 
+      return;
+  }
+
+  const { value: pin } = await Swal.fire({
+      title: '<h3 style="color: #0f172a; margin: 0;"><i class="fas fa-shield-alt text-primary"></i> Keamanan Admin</h3>',
+      html: '<p style="font-size:0.9rem; color:#64748b; margin-top:5px;">Masukkan 6 digit PIN akses Administrator.</p>',
+      input: 'password',
+      inputPlaceholder: '******',
+      inputAttributes: {
+          maxlength: 6,
+          autocapitalize: 'off',
+          autocorrect: 'off',
+          style: 'text-align: center; font-size: 1.5rem; letter-spacing: 10px; border-radius: 12px;'
+      },
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      confirmButtonText: '<i class="fas fa-unlock-alt me-2"></i> Buka Akses',
+      confirmButtonColor: '#0d6efd',
+      preConfirm: async (enteredPin) => {
+          if (!enteredPin) {
+              Swal.showValidationMessage('<i class="fas fa-exclamation-circle"></i> PIN tidak boleh kosong!');
+              return false;
+          }
+          
+          // Hash PIN yang diketik dan hapus spasi tersembunyi
+          const hashedPin = await hashPIN(enteredPin.trim());
+          
+          if (hashedPin !== CORRECT_PIN_HASH) {
+              Swal.showValidationMessage('<i class="fas fa-exclamation-triangle"></i> PIN salah! Akses ditolak.');
+              return false;
+          }
+          return true;
+      }
   });
+
+  // Jika PIN Benar
+  if (pin) {
+      sessionStorage.setItem('admin_authenticated', 'true');
+      Swal.fire({
+          icon: 'success',
+          title: 'Akses Diberikan',
+          text: 'Selamat datang di Panel Admin',
+          timer: 1500,
+          showConfirmButton: false
+      });
+      
+      // Baru inisialisasi UI dan Tarik Data setelah PIN Benar
+      initUI();
+      loadDataServer();
+  }
+}
+
+// Inisialisasi awal saat halaman dimuat (Verifikasi PIN terlebih dahulu)
+$(document).ready(function() {
+  checkAccessPin();
+});
+
 // Toggle sidebar (buka/tutup) saat klik hamburger
 $('#sidebarCollapse').on('click', function() {
     $('#sidebar').toggleClass('active');
@@ -177,118 +246,118 @@ async function loadDataServer(isSilent = false) {
 }
   
 function renderChartBulanKeseluruhan() {
-  const selectBulan = document.getElementById('selectBulanGlobal');
-  if (!selectBulan) return;
-
-  let bulanTerpilih = selectBulan.value;
+  let bulanTerpilih = $('#selectBulanGlobal').val(); 
   let currentYear = new Date().getFullYear(); 
-  let formatBulan = `${currentYear}-${bulanTerpilih}`;
+  let formatBulan = `${currentYear}-${bulanTerpilih}`; 
   let mapData = {};
 
-  // 1. Mapping Nama Bulan (Definisikan di awal)
-  const shortMonths = {
-    "01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr", 
-    "05": "Mei", "06": "Jun", "07": "Jul", "08": "Ags", 
-    "09": "Sep", "10": "Okt", "11": "Nov", "12": "Des"
-  };
-
-  // 2. Pengumpulan Data dari globalLogs
   globalLogs.forEach(log => {
     let isMatch = (bulanTerpilih === "ALL" || log.bulan === formatBulan);
     if(isMatch && log.status !== "LIBUR") {
       if(!mapData[log.bulan]) { 
-        mapData[log.bulan] = {
-          "Hadir": 0, "Cuti Tahunan": 0, "Cuti Melahirkan": 0, "Cuti Sakit": 0, 
-          "Cuti Besar": 0, "Cuti Diluar Tanggungan Negara": 0, 
-          "Cuti Alasan Penting": 0, "Cuti Bersama": 0, "Dinas Luar": 0, "Tanpa Keterangan": 0
-        }; 
+        mapData[log.bulan] = {"Hadir": 0, "Cuti Tahunan": 0, "Cuti Melahirkan": 0, "Cuti Sakit": 0, "Cuti Besar": 0, "Cuti Diluar Tanggungan Negara": 0, "Cuti Alasan Penting": 0, "Dinas Luar": 0, "Tanpa Keterangan": 0}; 
       }
-      let st = (log.status || "").toUpperCase();
-      if(st === "HADIR") mapData[log.bulan]["Hadir"]++;
-      else if(st === "CUTI TAHUNAN") mapData[log.bulan]["Cuti Tahunan"]++;
-      else if(st === "CUTI MELAHIRKAN") mapData[log.bulan]["Cuti Melahirkan"]++;
-      else if(st === "CUTI SAKIT") mapData[log.bulan]["Cuti Sakit"]++;
-      else if(st === "CUTI BESAR") mapData[log.bulan]["Cuti Besar"]++;
-      else if(st === "CUTI DILUAR TANGGUNGAN NEGARA") mapData[log.bulan]["Cuti Diluar Tanggungan Negara"]++;
-      else if(st === "CUTI ALASAN PENTING") mapData[log.bulan]["Cuti Alasan Penting"]++;
-      else if(st === "DINAS LUAR" || st === "DL") mapData[log.bulan]["Dinas Luar"]++;
-      else if(st === "TANPA KETERANGAN" || st === "TK") mapData[log.bulan]["Tanpa Keterangan"]++;
-      else if(st === "CUTI BERSAMA") mapData[log.bulan]["Cuti Bersama"]++;
+      let st = log.status.toUpperCase();
+      if(st === "HADIR") mapData[log.bulan]["Hadir"]++; 
+      else if(st === "DL" || st === "DINAS LUAR") mapData[log.bulan]["Dinas Luar"]++; 
+      else if(st === "TK" || st === "TANPA KETERANGAN") mapData[log.bulan]["Tanpa Keterangan"]++;
+      else {
+        let key = Object.keys(colorMap).find(k => k.toUpperCase() === st);
+        if(key) mapData[log.bulan][key]++;
+      }
     }
   });
 
-  // 3. Menyiapkan Labels (Kunci Asli)
-  let labelsOriginal = Object.keys(mapData).sort(); 
+  let labels = Object.keys(mapData).sort(); 
+  let datasets = [];
   
-  // 4. MENGUBAH LABEL KE FORMAT 3 KARAKTER (PASTI BERHASIL)
-  let labelsNamaBulan = labelsOriginal.map(l => {
-    // Ambil bagian bulan saja (misal "2026-03" -> "03" atau "03" -> "03")
-    let kodeBulan = l.includes('-') ? l.split('-')[1] : l;
-    // Ambil mapping, jika tidak ada tampilkan kode aslinya
-    return shortMonths[kodeBulan] || kodeBulan;
+  let statusKeys = ["Hadir", "Cuti Tahunan", "Cuti Melahirkan", "Cuti Sakit", "Cuti Besar", "Cuti Diluar Tanggungan Negara", "Cuti Alasan Penting", "Dinas Luar", "Tanpa Keterangan"];
+
+  statusKeys.forEach(key => {
+    let dataArray = labels.map(b => mapData[b][key] || 0);
+    if (dataArray.some(val => val > 0)) {
+      datasets.push({ 
+        label: key, 
+        data: dataArray, 
+        backgroundColor: colorMap[key] || "#cccccc", 
+        borderRadius: 4, 
+        barPercentage: 0.7 // Disamakan lebarnya dengan Cendol Dash
+      });
+    }
   });
 
-  // 5. Menyiapkan Datasets
-  let datasets = [];
-  if (typeof statusKeys !== 'undefined') {
-    statusKeys.forEach(key => {
-      // Kita gunakan labelsOriginal (angka) untuk map data agar tidak undefined
-      let dataArray = labelsOriginal.map(b => mapData[b][key] || 0);
-      if (dataArray.some(val => val > 0)) {
-        datasets.push({ 
-          label: key, 
-          data: dataArray, 
-          backgroundColor: colorMap[key] || '#cccccc', 
-          borderRadius: 4, 
-          barPercentage: 0.8 
-        });
-      }
-    });
+  const ctx = document.getElementById('chartAllBulan').getContext('2d');
+  
+  if(chartAll) chartAll.destroy(); 
+  
+  if (typeof ChartDataLabels !== 'undefined') { 
+    Chart.register(ChartDataLabels); 
   }
 
-  // 6. Rendering Grafik
-  const canvas = document.getElementById('chartAllBulan');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  
-  if(window.chartAll) window.chartAll.destroy();
-  if (typeof ChartDataLabels !== 'undefined') Chart.register(ChartDataLabels);
-
-  window.chartAll = new Chart(ctx, {
+  // --- OPSI TAMPILAN DIUBAH MENYERUPAI CENDOL DASH ---
+  chartAll = new Chart(ctx, {
     type: 'bar',
     data: { 
-      labels: labelsNamaBulan.length ? labelsNamaBulan : ['No Data'], 
-      datasets: datasets.length ? datasets : [{ label: 'Empty', data: [0], backgroundColor: '#eee' }] 
+      labels: labels.length ? labels.map(l => l.substring(5)) : ['No Data'], 
+      datasets: datasets.length ? datasets : [{ label: 'Empty', data: [0] }] 
     },
     options: {
       responsive: true, 
       maintainAspectRatio: false, 
+      layout: { padding: { top: 20 } }, // Memberi ruang ekstra di atas chart
       interaction: { mode: 'index', intersect: false },
-      animation: {
-        duration: 1200,
-        easing: 'easeOutQuart'
-      },
-      plugins: {
+      plugins: { 
         legend: { 
-          position: 'bottom', 
-          labels: { usePointStyle: true, boxWidth: 8, padding: 15, font: { family: "'Plus Jakarta Sans', sans-serif", size: 10 } } 
-        },
+          position: 'top', // Dipindah ke atas
+          align: 'end',    // Rata ke kanan
+          labels: { 
+            usePointStyle: true, 
+            boxWidth: 8, 
+            padding: 15, 
+            font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 } 
+          } 
+        }, 
         datalabels: { 
-          color: '#fff', 
-          font: { weight: 'bold', size: 9 }, 
-          formatter: (value) => value > 0 ? value : '' 
+          display: true, 
+          color: '#ffffff', 
+          font: { weight: 'bold', size: 10, family: "'Plus Jakarta Sans', sans-serif" }, 
+          anchor: 'center',
+          align: 'center',
+          formatter: (value) => {
+            return value > 0 ? value : ''; 
+          },
+          textStrokeColor: 'rgba(0,0,0,0.2)',
+          textStrokeWidth: 1
         },
         tooltip: { 
-          backgroundColor: 'rgba(255, 255, 255, 0.9)', 
-          titleColor: '#2c3e50', 
-          bodyColor: '#2c3e50', 
-          borderColor: '#e9ecef', 
-          borderWidth: 1 
-        }
+          backgroundColor: '#1e293b', // Warna gelap ala Tooltip Cendol Dash
+          padding: 12,
+          titleColor: '#ffffff', 
+          bodyColor: '#ffffff', 
+          borderColor: 'transparent', 
+          borderWidth: 0 
+        } 
       },
-      scales: {
-        x: { stacked: true, grid: { display: false }, ticks: { font: { weight: 'bold' } } },
-        y: { stacked: true, border: { display: false }, grid: { color: '#f8f9fa' }, ticks: { precision: 0 } }
+      scales: { 
+        x: { 
+          stacked: true, 
+          grid: { display: false }, // Menghilangkan garis vertikal
+          ticks: { font: { family: "'Plus Jakarta Sans'" } }
+        }, 
+        y: { 
+          stacked: true, 
+          beginAtZero: true,
+          border: { display: false }, // Hilangkan border solid pinggir
+          grid: { 
+            color: '#e2e8f0', 
+            drawBorder: false, 
+            borderDash: [5, 5] // Garis pembatas horizontal putus-putus ala Cendol
+          }, 
+          ticks: { 
+            display: false, // Menyembunyikan angka di Y-Axis karena sudah ada Datalabels
+            font: { family: "'Plus Jakarta Sans'" }
+          } 
+        } 
       }
     }
   });
@@ -518,11 +587,14 @@ const colorMap = {
 const statusKeys = ["Hadir", "Cuti Tahunan", "Cuti Melahirkan", "Cuti Sakit", "Cuti Besar", "Cuti Diluar Tanggungan Negara", "Cuti Alasan Penting", "Cuti Bersama", "Dinas Luar", "Tanpa Keterangan", "Libur"];
 
 function renderChartBulanKeseluruhan() {
-  let bulanTerpilih = $('#selectBulanGlobal').val(); 
+  let selectBulan = document.getElementById('selectBulanGlobal');
+  if (!selectBulan) return;
+  let bulanTerpilih = selectBulan.value; 
   let currentYear = new Date().getFullYear(); 
   let formatBulan = `${currentYear}-${bulanTerpilih}`; 
   let mapData = {};
 
+  // 1. Kumpulkan Data Log
   globalLogs.forEach(log => {
     let isMatch = (bulanTerpilih === "ALL" || log.bulan === formatBulan);
     if(isMatch && log.status !== "LIBUR") {
@@ -540,85 +612,111 @@ function renderChartBulanKeseluruhan() {
     }
   });
 
-  let labels = Object.keys(mapData).sort(); 
-  let datasets = [];
+  let labelsOriginal = Object.keys(mapData).sort(); 
   
-  // Ambil keys dari stats untuk memastikan urutan konsisten
+  // 2. Format Nama Bulan (3 Huruf)
+  const shortMonths = {
+    "01": "Jan", "02": "Feb", "03": "Mar", "04": "Apr", 
+    "05": "Mei", "06": "Jun", "07": "Jul", "08": "Ags", 
+    "09": "Sep", "10": "Okt", "11": "Nov", "12": "Des"
+  };
+
+  let labelsNamaBulan = labelsOriginal.map(l => {
+    let kodeBulan = l.includes('-') ? l.split('-')[1] : l;
+    return shortMonths[kodeBulan] || kodeBulan;
+  });
+
+  // 3. Setup Dataset
+  let datasets = [];
   let statusKeys = ["Hadir", "Cuti Tahunan", "Cuti Melahirkan", "Cuti Sakit", "Cuti Besar", "Cuti Diluar Tanggungan Negara", "Cuti Alasan Penting", "Dinas Luar", "Tanpa Keterangan"];
 
   statusKeys.forEach(key => {
-    let dataArray = labels.map(b => mapData[b][key] || 0);
+    let dataArray = labelsOriginal.map(b => mapData[b][key] || 0);
     if (dataArray.some(val => val > 0)) {
       datasets.push({ 
         label: key, 
         data: dataArray, 
         backgroundColor: colorMap[key] || "#cccccc", 
         borderRadius: 4, 
-        barPercentage: 0.8 
+        barPercentage: 0.7,  // Jarak renggang ala Cendol Dash
+        borderWidth: 0
       });
     }
   });
 
-  const ctx = document.getElementById('chartAllBulan').getContext('2d');
+  // 4. Render Chart
+  const canvas = document.getElementById('chartAllBulan');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
   
-  if(chartAll) chartAll.destroy(); 
-  
-  // Registrasi Plugin Datalabels
-  if (typeof ChartDataLabels !== 'undefined') { 
-    Chart.register(ChartDataLabels); 
-  }
+  if(window.chartAll) window.chartAll.destroy(); 
+  if(typeof ChartDataLabels !== 'undefined') Chart.register(ChartDataLabels);
 
-  chartAll = new Chart(ctx, {
+  window.chartAll = new Chart(ctx, {
     type: 'bar',
     data: { 
-      labels: labels.length ? labels.map(l => l.substring(5)) : ['No Data'], 
-      datasets: datasets.length ? datasets : [{ label: 'Empty', data: [0] }] 
+      labels: labelsNamaBulan.length ? labelsNamaBulan : ['No Data'], 
+      datasets: datasets.length ? datasets : [{ label: 'Empty', data: [0], backgroundColor: '#e2e8f0' }] 
     },
     options: {
       responsive: true, 
       maintainAspectRatio: false, 
+      layout: { padding: { top: 30 } }, // Jarak atas diperlebar agar angka tidak terpotong
       interaction: { mode: 'index', intersect: false },
       plugins: { 
         legend: { 
-          position: 'bottom', 
+          position: 'top', 
+          align: 'end',     // Legend di Atas Kanan
           labels: { 
             usePointStyle: true, 
             boxWidth: 8, 
             padding: 15, 
-            font: { family: "'Plus Jakarta Sans', sans-serif", size: 11 } 
+            font: { family: "'Plus Jakarta Sans', sans-serif", size: 11, weight: '500' },
+            color: '#64748b'
           } 
         }, 
-        // KONFIGURASI TEKS ANGKA OTOMATIS
         datalabels: { 
-          display: true, // Memaksa teks muncul tanpa hover
-          color: '#ffffff', 
-          font: { weight: 'bold', size: 10, family: "'Plus Jakarta Sans', sans-serif" }, 
-          // Atur posisi angka di tengah batang yang bertumpuk (stacked)
-          anchor: 'center',
-          align: 'center',
-          formatter: (value) => {
-            // Hanya tampilkan jika angka lebih besar dari 0 agar tidak berantakan
-            return value > 0 ? value : ''; 
+          display: true, 
+          // Warna teks mengikuti warna bar (seperti gambar Cendol Dash)
+          color: function(context) {
+            return context.dataset.backgroundColor;
           },
-          // Outline tipis agar angka lebih jelas terbaca jika warna bar terang
-          textStrokeColor: 'rgba(0,0,0,0.2)',
-          textStrokeWidth: 1
+          font: { weight: 'bold', size: 11, family: "'Plus Jakarta Sans', sans-serif" }, 
+          // Posisi angka diubah ke ATAS bar
+          anchor: 'end',
+          align: 'top',
+          offset: 4,
+          formatter: (value) => value > 0 ? value : ''
+        },
+        tooltip: { 
+          backgroundColor: '#1e293b', 
+          padding: 12,
+          titleFont: { family: "'Plus Jakarta Sans'", size: 13 },
+          bodyFont: { family: "'Plus Jakarta Sans'", size: 12 },
+          titleColor: '#ffffff', 
+          bodyColor: '#ffffff', 
+          borderColor: 'transparent', 
+          borderWidth: 0,
+          cornerRadius: 8
         } 
       },
       scales: { 
         x: { 
-          stacked: true, 
-          grid: { display: false },
-          ticks: { font: { family: "'Plus Jakarta Sans'" } }
+          stacked: false, // DIBUAT TIDAK BERTUMPUK (Side-by-side)
+          grid: { display: false }, 
+          ticks: { font: { family: "'Plus Jakarta Sans'", weight: '600' }, color: '#475569' },
+          border: { display: false }
         }, 
         y: { 
-          stacked: true, 
+          stacked: false, // DIBUAT TIDAK BERTUMPUK (Side-by-side)
+          beginAtZero: true,
           border: { display: false }, 
-          grid: { color: '#f1f5f9' }, 
-          ticks: { 
-            precision: 0,
-            font: { family: "'Plus Jakarta Sans'" }
-          } 
+          grid: { 
+            color: '#e2e8f0', 
+            drawBorder: false, 
+            borderDash: [5, 5] // Grid putus-putus
+          }, 
+          ticks: { display: false } // Angka Y dihilangkan
         } 
       }
     }
