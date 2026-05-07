@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Manajemen Absensi - LPKA Kutoarjo</title>
+  <title>SIRA-MANGAN - LPKA Kutoarjo</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -27,8 +27,10 @@
             <i class="fas fa-building small"></i>
           </div>
           <div class="text-white">
-            <h6 class="mb-0 fw-bold small">LPKA KUTOARJO</h6>
-            <p class="mb-0 text-white-50" style="font-size: 0.65rem;">Panel Absensi</p>
+            <h6 class="mb-0 fw-bold">SIRA-MANGAN</h6>
+            <p class="mb-0 text-white-50" style="font-size: 0.6rem; line-height: 1.2;">
+              Sistem Informasi Rekap Absensi & <br>Pembayaran Uang Makan Pegawai
+            </p>
           </div>
         </div>
       </div>
@@ -47,13 +49,16 @@
           <a href="#" class="sidebar-link" data-target="section-pegawai">
             <i class="fas fa-users-cog nav-icon"></i> Kelola Pegawai
           </a>
-<a href="#" class="sidebar-link" data-target="section-database">
-  <i class="fas fa-database nav-icon"></i> Database Absensi</a>
+          <a href="#" class="sidebar-link" data-target="section-database">
+            <i class="fas fa-database nav-icon"></i> Database Absensi(View)
+          </a>
           <p class="text-uppercase text-white-50 fw-bold px-3 mb-1 mt-3" style="font-size: 0.65rem;">Manajemen Cuti</p>
           <a href="#" class="sidebar-link" data-target="section-cuti">
-            <i class="fas fa-calendar-check nav-icon"></i> Monitoring Cuti</a>
-<a href="#" class="sidebar-link" data-target="section-database-cuti">
-  <i class="fas fa-database nav-icon"></i> Database Cuti</a>
+            <i class="fas fa-calendar-check nav-icon"></i> Monitoring Cuti
+          </a>
+          <a href="#" class="sidebar-link" data-target="section-database-cuti">
+            <i class="fas fa-database nav-icon"></i> Database Cuti (View)
+          </a>
         </nav>
       </div>
 
@@ -93,118 +98,137 @@
       <div class="container-fluid p-4 pb-5">
         
         <div id="section-dashboard" class="content-section active">
- <div class="row g-4 mb-4">
-      <div class="col-12 col-xl-4 col-lg-5">
-        <div class="card stat-card border-0 shadow-sm h-100 bg-gradient-primary text-white" style="border-radius: 20px; overflow: hidden; position: relative;">
-<div class="position-absolute end-0 top-0 opacity-10 mt-3 me-n3">
-  <i class="fas fa-users" style="font-size: 6rem;"></i>
-</div>
-          <div class="card-body p-4 d-flex flex-column justify-content-center position-relative z-1">
-            <div class="d-flex align-items-center gap-3 mb-3">
-              <div class="bg-white bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                <i class="fas fa-id-badge fs-4 text-white"></i>
+
+          <div class="row mb-4">
+            <div class="col-12">
+              <div class="card border-0 shadow-sm p-3" style="border-radius: 15px;">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                  <h5 class="fw-bold mb-0 text-dark"><i class="fas fa-filter me-2 text-primary"></i>Filter Dashboard</h5>
+                  <div class="d-flex gap-2">
+                    <select id="filterBulanRekapan" class="form-select shadow-sm rounded-pill px-4 bg-light fw-bold text-primary" style="min-width:200px;" onchange="applyFilterBulan()">
+                      <option value="ALL">Sepanjang Tahun</option>
+                      <option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option>
+                      <option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option>
+                      <option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option>
+                      <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+                    </select>
+                  </div>
+                </div>
               </div>
-              <h6 class="fw-semibold mb-0 text-uppercase tracking-wide text-white-50">Total Pegawai</h6>
             </div>
-            <h1 class="fw-bolder text-white mb-0 display-4" id="statTotalPegawai">0</h1>
-            <p class="text-white-50 small mt-2 mb-0"><i class="fas fa-info-circle me-1"></i>Berdasarkan data tersinkronisasi</p>
           </div>
-        </div>
-      </div>
 
-      <div class="col-12 col-xl-8 col-lg-7">
-        <div class="card stat-card border-0 shadow-sm h-100" style="border-radius: 20px;">
-          <div class="card-body p-4 d-flex flex-column justify-content-center">
-            
-            <div class="d-flex flex-wrap justify-content-between align-items-center border-bottom pb-3 mb-3 gap-2">
-              <div class="d-flex align-items-center gap-2">
-                <div class="icon-circle bg-primary bg-opacity-10 text-primary shadow-sm" style="width: 32px; height: 32px;">
-                  <i class="fas fa-chart-line fs-6"></i>
+          <div class="row g-4 mb-4">
+            <div class="col-12 col-xl-4 col-lg-5">
+              <div class="card stat-card border-0 shadow-sm h-100 bg-gradient-primary text-white" style="border-radius: 20px; overflow: hidden; position: relative;">
+                <div class="position-absolute end-0 top-0 opacity-10 mt-n3 me-n3">
+                  <i class="fas fa-users" style="font-size: 8rem;"></i>
                 </div>
-                <h6 class="fw-bold mb-0 text-dark text-uppercase tracking-wide">Ringkasan Kehadiran</h6>
-              </div>
-              <span id="labelBulanStat" class="badge bg-primary bg-gradient px-3 py-2 rounded-pill shadow-sm fw-semibold" style="font-size: 0.8rem;">
-                <i class="fas fa-calendar-alt me-1"></i> Memuat Bulan...
-              </span>
-            </div>
-
-            <div class="row g-4 align-items-center">
-              <div class="col-sm-6 position-relative">
-                <div class="d-flex align-items-center gap-3">
-                  <div class="stat-icon bg-success bg-gradient bg-opacity-10 text-success rounded-circle shadow-sm" style="width: 60px; height: 60px;">
-                    <i class="fas fa-user-check fs-3"></i>
+                <div class="card-body p-4 d-flex flex-column justify-content-center position-relative z-1">
+                  <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="bg-white bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                      <i class="fas fa-id-badge fs-4 text-white"></i>
+                    </div>
+                    <h6 class="fw-semibold mb-0 text-uppercase tracking-wide text-white-50">Total Pegawai</h6>
                   </div>
-                  <div>
-                    <p class="text-muted fw-semibold mb-1 small text-uppercase tracking-wide">Total Hadir</p>
-                    <h2 class="fw-bolder text-dark mb-0 d-flex align-items-baseline gap-1" id="statTotalHadir">
-                      0 <span class="fs-6 text-muted fw-normal">Hari</span>
-                    </h2>
-                  </div>
-                </div>
-                <div class="position-absolute top-50 end-0 translate-middle-y d-none d-sm-block bg-light" style="width: 2px; height: 60%;"></div>
-              </div>
-              
-              <div class="col-sm-6">
-                <div class="d-flex align-items-center gap-3 ps-sm-3">
-                  <div class="stat-icon bg-warning bg-gradient bg-opacity-10 text-warning rounded-circle shadow-sm" style="width: 60px; height: 60px;">
-                    <i class="fas fa-user-minus fs-3"></i>
-                  </div>
-                  <div>
-                    <p class="text-muted fw-semibold mb-1 small text-uppercase tracking-wide">Total Cuti / DL / TK</p>
-                    <h2 class="fw-bolder text-dark mb-0 d-flex align-items-baseline gap-1" id="statTotalAbsen">
-                      0 <span class="fs-6 text-muted fw-normal">Hari</span>
-                    </h2>
-                  </div>
+                  <h1 class="fw-bolder text-white mb-0 display-4" id="statTotalPegawai">0</h1>
+                  <p class="text-white-50 small mt-2 mb-0"><i class="fas fa-info-circle me-1"></i>Berdasarkan data tersinkronisasi</p>
                 </div>
               </div>
             </div>
 
+            <div class="col-12 col-xl-8 col-lg-7">
+              <div class="card stat-card border-0 shadow-sm h-100" style="border-radius: 20px;">
+                <div class="card-body p-4 d-flex flex-column justify-content-center">
+                  <div class="d-flex flex-wrap justify-content-between align-items-center border-bottom pb-3 mb-3 gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="icon-circle bg-primary bg-opacity-10 text-primary shadow-sm" style="width: 32px; height: 32px;">
+                        <i class="fas fa-chart-line fs-6"></i>
+                      </div>
+                      <h6 class="fw-bold mb-0 text-dark text-uppercase tracking-wide">Ringkasan Kehadiran</h6>
+                    </div>
+                    <span id="labelBulanStat" class="badge bg-primary bg-gradient px-3 py-2 rounded-pill shadow-sm fw-semibold" style="font-size: 0.8rem;">
+                      <i class="fas fa-calendar-alt me-1"></i> Memuat Bulan...
+                    </span>
+                  </div>
+
+                  <div class="row g-4 align-items-center">
+                    <div class="col-sm-6 position-relative">
+                      <div class="d-flex align-items-center gap-3">
+                        <div class="stat-icon bg-success bg-gradient bg-opacity-10 text-success rounded-circle shadow-sm" style="width: 60px; height: 60px;">
+                          <i class="fas fa-user-check fs-3"></i>
+                        </div>
+                        <div>
+                          <p class="text-muted fw-semibold mb-1 small text-uppercase tracking-wide">Total Hadir</p>
+                          <h2 class="fw-bolder text-dark mb-0 d-flex align-items-baseline gap-1" id="statTotalHadir">
+                            0 <span class="fs-6 text-muted fw-normal">Hari</span>
+                          </h2>
+                        </div>
+                      </div>
+                      <div class="position-absolute top-50 end-0 translate-middle-y d-none d-sm-block bg-light" style="width: 2px; height: 60%;"></div>
+                    </div>
+                    
+                    <div class="col-sm-6">
+                      <div class="d-flex align-items-center gap-3 ps-sm-3">
+                        <div class="stat-icon bg-warning bg-gradient bg-opacity-10 text-warning rounded-circle shadow-sm" style="width: 60px; height: 60px;">
+                          <i class="fas fa-user-minus fs-3"></i>
+                        </div>
+                        <div>
+                          <p class="text-muted fw-semibold mb-1 small text-uppercase tracking-wide">Total Cuti / DL / TK</p>
+                          <h2 class="fw-bolder text-dark mb-0 d-flex align-items-baseline gap-1" id="statTotalAbsen">
+                            0 <span class="fs-6 text-muted fw-normal">Hari</span>
+                          </h2>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-</div>
 
           <div class="row g-4 mb-4">
             <div class="col-xl-7 col-lg-12">
               <div class="card interactive-card border-0 shadow-sm h-100">
-                <div class="card-header bg-white p-4 pb-0 border-0 d-flex flex-wrap justify-content-between align-items-center gap-3">
-                  <h6 class="fw-bold mb-0 text-dark"><i class="fas fa-chart-bar me-2 text-primary"></i>Tren Global</h6>
-                  <select id="selectBulanGlobal" class="form-select form-select-sm w-auto rounded-pill shadow-sm bg-light fw-medium" onchange="renderChartBulanKeseluruhan()">
-                    <option value="ALL">Tahunan</option>
-                    <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option><option value="04">Apr</option><option value="05">Mei</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ags</option><option value="09">Sep</option><option value="10">Okt</option><option value="11">Nov</option><option value="12">Des</option>
-                  </select>
+                <div class="card-header bg-white pt-4 pb-0 border-0 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                  <h6 class="fw-bold mb-0 text-dark"><i class="fas fa-chart-bar me-2 text-primary"></i>Tren Absensi Global</h6>
                 </div>
-                <div class="card-body" style="position: relative; min-height:300px;"><canvas id="chartAllBulan"></canvas></div>
+                <div class="card-body" style="position: relative; min-height:350px;">
+                  <canvas id="chartAllBulan"></canvas>
+                </div>
               </div>
             </div>
             
             <div class="col-xl-5 col-lg-12">
               <div class="card interactive-card border-0 shadow-sm h-100">
-                <div class="card-header bg-white p-4 pb-0 border-0 d-flex flex-column gap-3">
+                <div class="card-header bg-white pt-4 pb-0 border-0 d-flex flex-column gap-3">
                   <div class="d-flex justify-content-between align-items-center">
                     <h6 class="fw-bold mb-0 text-dark"><i class="fas fa-chart-pie me-2 text-success"></i>Grafik Personal</h6>
-                    <select id="selectBulanGrafik" class="form-select form-select-sm w-auto rounded-pill shadow-sm bg-light fw-medium" onchange="updateChartPegawai()">
-                      <option value="ALL">Tahunan</option>
-                      <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option><option value="04">Apr</option><option value="05">Mei</option><option value="06">Jun</option><option value="07">Jul</option><option value="08">Ags</option><option value="09">Sep</option><option value="10">Okt</option><option value="11">Nov</option><option value="12">Des</option>
+                  </div>
+                  <div class="w-100">
+                    <select id="selectGrafikPegawai" class="form-select shadow-sm w-100 select-pegawai">
+                      <option value="">Ketik nama pegawai...</option>
                     </select>
                   </div>
-                  <div class="w-100"><select id="selectGrafikPegawai" class="form-select shadow-sm w-100 select-pegawai"><option value="">Ketik nama pegawai...</option></select></div>
                 </div>
-                <div class="card-body" style="position: relative; min-height:280px;"><canvas id="chartPerPegawai"></canvas></div>
+                <div class="card-body" style="position: relative; min-height:300px;">
+                  <canvas id="chartPerPegawai"></canvas>
+                </div>
               </div>
             </div>
           </div>
 
           <div class="card interactive-card border-0 shadow-sm mb-4">
             <div class="card-header bg-white p-4 border-bottom d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-              <h6 class="fw-bold text-dark mb-0"><i class="fas fa-table text-info me-2"></i>Data Rekapan Utama</h6>
+              <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                <div class="icon-circle bg-info bg-opacity-10 text-info" style="width:30px; height:30px;"><i class="fas fa-table fs-6"></i></div>
+                Data Rekapan Utama
+              </h5>
               <div class="d-flex flex-wrap gap-2">
-                <select id="filterBulanRekapan" class="form-select form-select-sm shadow-sm rounded-pill px-3 bg-light fw-bold text-primary" style="min-width:160px;" onchange="applyFilterBulan()">
-                  <option value="01">Bulan Januari</option><option value="02">Bulan Februari</option><option value="03">Bulan Maret</option>
-                  <option value="04">Bulan April</option><option value="05">Bulan Mei</option><option value="06">Bulan Juni</option>
-                  <option value="07">Bulan Juli</option><option value="08">Bulan Agustus</option><option value="09">Bulan September</option>
-                  <option value="10">Bulan Oktober</option><option value="11">Bulan November</option><option value="12">Bulan Desember</option>
-                </select>
+                <button class="btn btn-primary btn-sm shadow-sm rounded-pill px-4 fw-bold" onclick="loadDataServer(false)">
+                  <i class="fas fa-sync-alt me-1"></i> Sinkronisasi Data
+                </button>
               </div>
             </div>
             <div class="card-body p-0">
@@ -212,571 +236,556 @@
                 <table id="tabelRekapan" class="table table-hover align-middle text-center custom-table w-100">
                   <thead>
                     <tr>
-                      <th rowspan="2" class="align-middle">No</th><th rowspan="2" class="align-middle text-start">Nama Pegawai</th><th rowspan="2" class="align-middle">Golongan</th>
-                      <th rowspan="2" class="align-middle text-primary">Hari Efektif</th><th colspan="3" class="border-bottom">Ketidakhadiran</th>
-                      <th rowspan="2" class="align-middle text-danger bg-danger bg-opacity-10 rounded-start">Jml Cuti/DL/TK</th><th rowspan="2" class="align-middle text-success bg-success bg-opacity-10 rounded-end">Jml Hadir</th>
-                      <th rowspan="2" class="align-middle text-start w-25">Keterangan</th>
+                      <th rowspan="2" class="align-middle">No</th>
+                      <th rowspan="2" class="align-middle text-start">Nama Pegawai</th>
+                      <th rowspan="2" class="align-middle">Golongan</th>
+                      <th rowspan="2" class="align-middle text-primary">Hari Efektif</th>
+                      <th colspan="3" class="border-bottom">Rincian Ketidakhadiran</th>
+                      <th rowspan="2" class="align-middle text-danger bg-danger bg-opacity-10 rounded-start">Total Cuti/DL/TK</th>
+                      <th rowspan="2" class="align-middle text-success bg-success bg-opacity-10 rounded-end">Total Hadir</th>
+                      <th rowspan="2" class="align-middle text-start w-25">Keterangan Jurnal</th>
                     </tr>
-                    <tr><th class="border-bottom-0 text-muted">Cuti</th><th class="border-bottom-0 text-muted">DL</th><th class="border-bottom-0 text-muted">TK</th></tr>
+                    <tr>
+                      <th class="border-bottom-0 text-muted">Cuti</th>
+                      <th class="border-bottom-0 text-muted">DL</th>
+                      <th class="border-bottom-0 text-muted">TK</th>
+                    </tr>
                   </thead>
                   <tbody id="tabelBody"></tbody>
                 </table>
               </div>
             </div>
           </div>
-        </div>
 
-        
-<div id="section-input" class="content-section" style="display:none;">
-  <div class="container-fluid">
-    
-<ul class="nav nav-pills nav-fill mb-4 bg-white p-2 shadow-sm rounded-pill" id="inputTab" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active rounded-pill fw-bold text-primary" id="efektif-tab" data-bs-toggle="tab" data-bs-target="#tab-efektif" type="button" role="tab">
-          <i class="fas fa-calendar-alt me-2"></i>Hari Efektif
-        </button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link rounded-pill fw-bold text-success" id="massal-tab" data-bs-toggle="tab" data-bs-target="#tab-massal" type="button" role="tab">
-          <i class="fas fa-users-cog me-2"></i>Status Massal
-        </button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link rounded-pill fw-bold text-warning" id="individu-tab" data-bs-toggle="tab" data-bs-target="#tab-individu" type="button" role="tab">
-          <i class="fas fa-user-edit me-2"></i>Pengecualian Individu
-        </button>
-      </li>
-    </ul>
+        </div> <div id="section-input" class="content-section" style="display:none;">
+          <div class="container-fluid">
+            
+            <ul class="nav nav-pills nav-fill mb-4 bg-white p-2 shadow-sm rounded-pill" id="inputTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active rounded-pill fw-bold text-primary" id="efektif-tab" data-bs-toggle="tab" data-bs-target="#tab-efektif" type="button" role="tab">
+                  <i class="fas fa-calendar-alt me-2"></i>Hari Efektif
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill fw-bold text-success" id="massal-tab" data-bs-toggle="tab" data-bs-target="#tab-massal" type="button" role="tab">
+                  <i class="fas fa-users-cog me-2"></i>Status Massal
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill fw-bold text-warning" id="individu-tab" data-bs-toggle="tab" data-bs-target="#tab-individu" type="button" role="tab">
+                  <i class="fas fa-user-edit me-2"></i>Pengecualian Individu
+                </button>
+              </li>
+            </ul>
 
-    <div class="tab-content" id="inputTabContent">
-      
-      <div class="tab-pane fade show active" id="tab-efektif" role="tabpanel">
-        <div class="row justify-content-center">
-          <div class="col-md-8 col-lg-6">
-            <div class="card border-0 shadow-sm border-top border-primary border-4">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-center mb-3">
-                  <div class="icon-box bg-primary text-white rounded-3 p-3 me-3">
-                    <i class="fas fa-calendar-check fa-lg"></i>
-                  </div>
-                  <div>
-                    <h5 class="fw-bold mb-0 text-primary">Hari Kerja Efektif</h5>
-                    <small class="text-muted">Setting parameter bulanan sistem</small>
-                  </div>
-                </div>
-                <hr>
-                <form id="formHariEfektif" onsubmit="handleHariEfektif(event)">
-                  <div class="mb-3">
-                    <label class="form-label fw-bold small text-secondary">Pilih Group</label>
-                    <select class="form-select border-primary-subtle shadow-sm" id="groupEfektif" required>
-                      <option value="ALL">Semua Group (Global)</option>
-                    </select>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label fw-bold small text-secondary">Pilih Bulan</label>
-<select id="bulanEfektif" class="form-select border-primary-subtle shadow-sm" required>
-  <option value="" selected disabled>-- Pilih Bulan --</option>
-  <option value="01">Januari</option>
-  <option value="02">Februari</option>
-  <option value="03">Maret</option>
-  <option value="04">April</option>
-  <option value="05">Mei</option>
-  <option value="06">Juni</option>
-  <option value="07">Juli</option>
-  <option value="08">Agustus</option>
-  <option value="09">September</option>
-  <option value="10">Oktober</option>
-  <option value="11">November</option>
-  <option value="12">Desember</option>
-</select>
-                  </div>
-                  <div class="mb-4">
-                    <label class="form-label fw-bold small text-secondary">Jumlah Hari</label>
-                    <div class="input-group shadow-sm">
-                      <input type="number" class="form-control border-primary-subtle" id="jumlahHari" min="1" max="31" placeholder="22" required>
-                      <span class="input-group-text bg-primary text-white border-primary">Hari</span>
+            <div class="tab-content" id="inputTabContent">
+              
+              <div class="tab-pane fade show active" id="tab-efektif" role="tabpanel">
+                <div class="row justify-content-center">
+                  <div class="col-md-8 col-lg-6">
+                    <div class="card border-0 shadow-sm border-top border-primary border-4">
+                      <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                          <div class="icon-box bg-primary text-white rounded-3 p-3 me-3">
+                            <i class="fas fa-calendar-check fa-lg"></i>
+                          </div>
+                          <div>
+                            <h5 class="fw-bold mb-0 text-primary">Hari Kerja Efektif</h5>
+                            <small class="text-muted">Setting parameter bulanan sistem</small>
+                          </div>
+                        </div>
+                        <hr>
+                        <form id="formHariEfektif" onsubmit="handleHariEfektif(event)">
+                          <div class="mb-3">
+                            <label class="form-label fw-bold small text-secondary">Pilih Group</label>
+                            <select class="form-select border-primary-subtle shadow-sm" id="groupEfektif" required>
+                              <option value="ALL">Semua Group (Global)</option>
+                            </select>
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label fw-bold small text-secondary">Pilih Bulan</label>
+                            <select id="bulanEfektif" class="form-select border-primary-subtle shadow-sm" required>
+                              <option value="" selected disabled>-- Pilih Bulan --</option>
+                              <option value="01">Januari</option>
+                              <option value="02">Februari</option>
+                              <option value="03">Maret</option>
+                              <option value="04">April</option>
+                              <option value="05">Mei</option>
+                              <option value="06">Juni</option>
+                              <option value="07">Juli</option>
+                              <option value="08">Agustus</option>
+                              <option value="09">September</option>
+                              <option value="10">Oktober</option>
+                              <option value="11">November</option>
+                              <option value="12">Desember</option>
+                            </select>
+                          </div>
+                          <div class="mb-4">
+                            <label class="form-label fw-bold small text-secondary">Jumlah Hari</label>
+                            <div class="input-group shadow-sm">
+                              <input type="number" class="form-control border-primary-subtle" id="jumlahHari" min="1" max="31" placeholder="22" required>
+                              <span class="input-group-text bg-primary text-white border-primary">Hari</span>
+                            </div>
+                          </div>
+                          <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow" id="btnSubmitEfektif">
+                            <i class="fas fa-save me-2"></i>Simpan Konfigurasi
+                          </button>
+                        </form>
+                      </div>
                     </div>
                   </div>
-<button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow" id="btnSubmitEfektif">
-  <i class="fas fa-save me-2"></i>Simpan Konfigurasi
-</button>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="tab-pane fade" id="tab-massal" role="tabpanel">
-        <div class="row justify-content-center">
-          <div class="col-md-8 col-lg-6">
-            <div class="card border-0 shadow-sm border-top border-success border-4">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-center mb-3">
-                  <div class="icon-box bg-success text-white rounded-3 p-3 me-3">
-                    <i class="fas fa-users-cog fa-lg"></i>
-                  </div>
-                  <div>
-                    <h5 class="fw-bold mb-0 text-success">Update Status Massal</h5>
-                    <small class="text-muted">Proses data berkelompok</small>
-                  </div>
                 </div>
-                <hr>
-                <form id="formStatusMassal" onsubmit="handleStatusMassal(event)">
-                  <div class="mb-3">
-                    <label class="form-label fw-bold small text-secondary">Tanggal</label>
-                    <input type="date" class="form-control border-success-subtle shadow-sm" id="tanggalMassal" required>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label fw-bold small text-secondary">Target Group</label>
-                    <select class="form-select border-success-subtle shadow-sm" id="groupMassal" required>
-                      <option value="ALL">Seluruh Pegawai</option>
-                    </select>
-                  </div>
-                  <div class="mb-4">
-                    <label class="form-label fw-bold small text-secondary">Status yang Diterapkan</label>
-                    <select class="form-select border-success-subtle shadow-sm" id="statusMassal" required>
-                      <option value="Hadir" class="text-success fw-bold">HADIR</option>
-                      <option value="Libur" class="text-danger fw-bold">LIBUR</option>
-                    </select>
-                  </div>
-<button type="submit" class="btn btn-success w-100 rounded-pill py-2 fw-bold shadow" id="btnStatusMassal">
-  <i class="fas fa-bolt me-2"></i>Eksekusi Perubahan
-</button>
-                </form>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div class="tab-pane fade" id="tab-individu" role="tabpanel">
-        <div class="row justify-content-center">
-          <div class="col-md-8 col-lg-6">
-            <div class="card border-0 shadow-sm border-top border-warning border-4">
-              <div class="card-body p-4">
-                <div class="d-flex align-items-center mb-3">
-                  <div class="icon-box bg-warning text-dark rounded-3 p-3 me-3">
-                    <i class="fas fa-user-edit fa-lg"></i>
-                  </div>
-                  <div>
-                    <h5 class="fw-bold mb-0 text-warning-emphasis">Input Pengecualian</h5>
-                    <small class="text-muted">Izin, Cuti, dan Revisi Perorangan</small>
-                  </div>
-                </div>
-                <hr>
-                <form id="formAbsensi" onsubmit="handleAbsensiSubmit(event)">
-                  <div class="mb-3">
-                    <label class="form-label fw-bold small text-secondary">Tanggal Efektif</label>
-                    <input type="date" class="form-control border-warning-subtle shadow-sm" id="tanggal" required>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label fw-bold small text-secondary">Cari Nama Pegawai</label>
-                    <select class="form-select select-pegawai border-warning-subtle shadow-sm" id="nama" required></select>
-                  </div>
-                    <div class="mb-3">
-                      <label class="form-label fw-bold">Status Absen</label>
-                      <select class="form-select" id="status" required>
-                        <option value="Hadir" class="fw-bold text-success">Ubah ke HADIR (Revisi)</option>
-                        <option value="Libur" class="fw-bold text-danger">Libur</option>
-                        <optgroup label="Kategori Cuti"><option value="Cuti Tahunan">Cuti Tahunan</option><option value="Cuti Melahirkan">Cuti Melahirkan</option><option value="Cuti Sakit">Cuti Sakit</option><option value="Cuti Alasan Penting">Cuti Alasan Penting</option><option value="Cuti Besar">Cuti Besar</option><option value="Cuti Diluar Tanggungan Negara">Cuti Diluar Tanggungan Negara</option></optgroup>
-                        <optgroup label="Kategori Lainnya"><option value="Dinas Luar">Dinas Luar</option><option value="Tanpa Keterangan">Tanpa Keterangan</option></optgroup>
-                      </select>
+              <div class="tab-pane fade" id="tab-massal" role="tabpanel">
+                <div class="row justify-content-center">
+                  <div class="col-md-8 col-lg-6">
+                    <div class="card border-0 shadow-sm border-top border-success border-4">
+                      <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                          <div class="icon-box bg-success text-white rounded-3 p-3 me-3">
+                            <i class="fas fa-users-cog fa-lg"></i>
+                          </div>
+                          <div>
+                            <h5 class="fw-bold mb-0 text-success">Update Status Massal</h5>
+                            <small class="text-muted">Proses data berkelompok</small>
+                          </div>
+                        </div>
+                        <hr>
+                        <form id="formStatusMassal" onsubmit="handleStatusMassal(event)">
+                          <div class="mb-3">
+                            <label class="form-label fw-bold small text-secondary">Tanggal</label>
+                            <input type="date" class="form-control border-success-subtle shadow-sm" id="tanggalMassal" required>
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label fw-bold small text-secondary">Target Group</label>
+                            <select class="form-select border-success-subtle shadow-sm" id="groupMassal" required>
+                              <option value="ALL">Seluruh Pegawai</option>
+                            </select>
+                          </div>
+                          <div class="mb-4">
+                            <label class="form-label fw-bold small text-secondary">Status yang Diterapkan</label>
+                            <select class="form-select border-success-subtle shadow-sm" id="statusMassal" required>
+                              <option value="Hadir" class="text-success fw-bold">HADIR</option>
+                              <option value="Libur" class="text-danger fw-bold">LIBUR</option>
+                            </select>
+                          </div>
+                          <button type="submit" class="btn btn-success w-100 rounded-pill py-2 fw-bold shadow" id="btnStatusMassal">
+                            <i class="fas fa-bolt me-2"></i>Eksekusi Perubahan
+                          </button>
+                        </form>
+                      </div>
                     </div>
-                  <div class="mb-4">
-                    <label class="form-label fw-bold small text-secondary">Keterangan / Jurnal</label>
-                    <textarea class="form-control border-warning-subtle shadow-sm" id="keterangan" rows="2"></textarea>
                   </div>
-<button type="submit" class="btn btn-warning w-100 rounded-pill py-2 fw-bold shadow text-dark" id="btnSubmitAbsen">
-  <i class="fas fa-save me-2"></i>Simpan Perubahan
-</button>
-                </form>
+                </div>
               </div>
+
+              <div class="tab-pane fade" id="tab-individu" role="tabpanel">
+                <div class="row justify-content-center">
+                  <div class="col-md-8 col-lg-6">
+                    <div class="card border-0 shadow-sm border-top border-warning border-4">
+                      <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                          <div class="icon-box bg-warning text-dark rounded-3 p-3 me-3">
+                            <i class="fas fa-user-edit fa-lg"></i>
+                          </div>
+                          <div>
+                            <h5 class="fw-bold mb-0 text-warning-emphasis">Input Pengecualian</h5>
+                            <small class="text-muted">Izin, Cuti, dan Revisi Perorangan</small>
+                          </div>
+                        </div>
+                        <hr>
+                        <form id="formAbsensi" onsubmit="handleAbsensiSubmit(event)">
+                          <div class="mb-3">
+                            <label class="form-label fw-bold small text-secondary">Tanggal Efektif</label>
+                            <input type="date" class="form-control border-warning-subtle shadow-sm" id="tanggal" required>
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label fw-bold small text-secondary">Cari Nama Pegawai</label>
+                            <select class="form-select select-pegawai border-warning-subtle shadow-sm" id="nama" required></select>
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label fw-bold">Status Absen</label>
+                            <select class="form-select" id="status" required>
+                              <option value="HADIR" class="fw-bold text-success">HADIR (REVISI)</option>
+                              <option value="LIBUR" class="fw-bold text-danger">LIBUR</option>
+                              <optgroup label="KATEGORI CUTI">
+                                <option value="CUTI TAHUNAN">CUTI TAHUNAN</option>
+                                <option value="CUTI MELAHIRKAN">CUTI MELAHIRKAN</option>
+                                <option value="CUTI SAKIT">CUTI SAKIT</option>
+                                <option value="CUTI ALASAN PENTING">CUTI ALASAN PENTING</option>
+                                <option value="CUTI BESAR">CUTI BESAR</option>
+                                <option value="CUTI DILUAR TANGGUNGAN NEGARA">CUTI DILUAR TANGGUNGAN NEGARA</option>
+                                <option value="CUTI BERSAMA/PENGGANTI">CUTI BERSAMA/PENGGANTI</option>
+                              </optgroup>
+                              <optgroup label="KATEGORI LAINNYA">
+                                <option value="DINAS LUAR">DINAS LUAR</option>
+                                <option value="TANPA KETERANGAN">TANPA KETERANGAN</option>
+                              </optgroup>
+                            </select>
+                          </div>
+                          <div class="mb-4">
+                            <label class="form-label fw-bold small text-secondary">Keterangan / Jurnal</label>
+                            <textarea class="form-control border-warning-subtle shadow-sm" id="keterangan" rows="2"></textarea>
+                          </div>
+                          <button type="submit" class="btn btn-warning w-100 rounded-pill py-2 fw-bold shadow text-dark" id="btnSubmitAbsen">
+                            <i class="fas fa-save me-2"></i>Simpan Perubahan
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
-      </div>
 
-    </div>
-  </div>
-</div>
-
-<div id="section-database" class="content-section" style="display:none;">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-12">
-        <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 15px;">
-          
-          <div class="card-header bg-dark py-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(45deg, #212529, #343a40);">
-            <div class="d-flex align-items-center">
-              <div class="icon-badge bg-primary text-white me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 10px;">
-                <i class="fas fa-database"></i>
-              </div>
-              <div>
-                <h6 class="fw-bold mb-0 text-white">Database Absensi</h6>
-                <small class="text-white-50" style="font-size: 0.75rem;">Mode Editor Aktif</small>
-              </div>
-            </div>
-            
-            <div class="d-flex gap-2">
-              <button id="btnRefreshDb" onclick="refreshDatabase(event)" class="btn btn-sm btn-outline-light rounded-pill px-3">
-                <i class="fas fa-sync-alt"></i>
-              </button>
-              <a href="https://docs.google.com/spreadsheets/d/1LNnWEQYBIHqNHYP6-2-vkt0mnkRiKSx29cY3CAyNkfk/edit" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  class="btn btn-info btn-sm rounded-pill fw-bold shadow-sm px-4 text-white">
-                <i class="fas fa-external-link-alt me-2"></i>Buka Tab Baru
-              </a>
-            </div>
-          </div>
-          
-          <div class="card-body p-0" style="height: 800px; background: #ffffff;">
-            <iframe 
-              id="frame-database"
-              src="https://docs.google.com/spreadsheets/d/1LNnWEQYBIHqNHYP6-2-vkt0mnkRiKSx29cY3CAyNkfk/edit?rm=minimal" 
-              width="100%" 
-              height="100%" 
-              frameborder="0" 
-              style="border: none;"
-              loading="lazy"
-              allowfullscreen>
-            </iframe>
-          </div>
-          
-          <div class="card-footer bg-white border-0 py-3 text-center">
-            <p class="text-muted small mb-0">
-              <i class="fas fa-cloud-upload-alt me-1 text-success"></i> 
-              Perubahan pada tabel di atas akan tersimpan otomatis ke sistem utama secara real-time.
-            </p>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="section-cuti" class="content-section" style="display:none;">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-12">
-        <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 15px;">
-          
-          <div class="card-header py-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(45deg, #e67e22, #d35400);">
-            <div class="d-flex align-items-center">
-              <div class="icon-badge bg-white me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 10px; color: #d35400;">
-                <i class="fas fa-calendar-check"></i>
-              </div>
-              <div>
-                <h6 class="fw-bold mb-0 text-white">Monitoring Cuti Pegawai</h6>
-                <small class="text-white-50" style="font-size: 0.75rem;">LPKA Kutoarjo - Rekapitulasi Izin & Cuti</small>
-              </div>
-            </div>
-            
-            <div class="d-flex gap-2">
-              <button onclick="refreshCuti()" class="btn btn-sm btn-outline-light rounded-pill px-3">
-                <i class="fas fa-sync-alt"></i>
-              </button>
-              <a href="https://cekcutiku.netlify.app/" 
-                 target="_blank" 
-                 rel="noopener noreferrer" 
-                 class="btn btn-warning btn-sm rounded-pill fw-bold shadow-sm px-4 text-dark">
-                <i class="fas fa-user-clock"></i>Monitoring Cuti
-              </a>
-            </div>
-          </div>
-          
-          <div class="card-body p-0" style="height: 600px; background: #f8f9fa;">
-            <iframe 
-              id="frame-cuti"
-              src="https://cekcutiku.netlify.app/"
-              width="100%" 
-              height="100%" 
-              frameborder="0" 
-              style="border: none;"
-              loading="lazy"
-              allowfullscreen>
-            </iframe>
-          </div>
-          
-          <div class="card-footer bg-white border-0 py-3">
-            <div class="row align-items-center">
-              <div class="col-md-8">
-                <p class="text-muted small mb-0">
-                  <i class="fas fa-info-circle me-1 text-warning"></i> 
-                  Menampilkan data real-time dari formulir pengajuan cuti.
-                </p>
-              </div>
-              <div class="col-md-4 text-md-end">
-                <span class="badge bg-light text-dark rounded-pill border">
-                  <i class="fas fa-clock me-1 text-primary"></i> Auto-Sync Aktif
-                </span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="section-pegawai" class="content-section" style="display:none;">
-  <div class="container-fluid">
-    
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h4 class="fw-bold mb-0 text-dark"><i class="fas fa-users-cog me-2"></i>Manajemen SDM</h4>
-      <button class="btn btn-outline-danger shadow-sm fw-bold rounded-pill px-4 btn-sm" onclick="handleResetAbsensi()">
-        <i class="fas fa-radiation-alt me-2"></i>Reset Database Absensi
-      </button>
-    </div>
-
-    <ul class="nav nav-pills mb-4 bg-white p-2 shadow-sm rounded-pill" id="pegawaiTab" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active rounded-pill fw-bold px-4" id="kelola-pegawai-tab" data-bs-toggle="tab" data-bs-target="#tab-kelola-pegawai" type="button" role="tab">
-          <i class="fas fa-user-tie me-2"></i>Kelola Pegawai
-        </button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link rounded-pill fw-bold px-4" id="kelola-group-tab" data-bs-toggle="tab" data-bs-target="#tab-kelola-group" type="button" role="tab">
-          <i class="fas fa-layer-group me-2"></i>Kelola Group
-        </button>
-      </li>
-    </ul>
-
-    <div class="tab-content" id="pegawaiTabContent">
-      
-      <div class="tab-pane fade show active" id="tab-kelola-pegawai" role="tabpanel">
-        <div class="row g-4">
-          <div class="col-xl-4 col-lg-5">
-            <div class="card border-0 shadow-sm border-top border-success border-4 h-100">
-              <div class="card-header bg-white border-bottom p-4">
-                <h6 class="fw-bold text-success mb-0"><i class="fas fa-user-plus me-2"></i>Register Pegawai Baru</h6>
-              </div>
-              <div class="card-body p-4">
-                <form id="formPegawai" onsubmit="handlePegawaiSubmit(event)">
-                  <div class="mb-3">
-                    <label class="form-label fw-bold small text-muted">Nama Lengkap</label>
-                    <input type="text" class="form-control border-success-subtle" id="namaBaru" placeholder="Masukkan nama..." required>
+        <div id="section-database" class="content-section" style="display:none;">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12">
+                <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 15px;">
+                  
+                  <div class="card-header bg-dark py-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(45deg, #212529, #343a40);">
+                    <div class="d-flex align-items-center">
+                      <div class="icon-badge bg-primary text-white me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 10px;">
+                        <i class="fas fa-database"></i>
+                      </div>
+                      <div>
+                        <h6 class="fw-bold mb-0 text-white">Database Absensi</h6>
+                        <small class="text-white-50" style="font-size: 0.75rem;">Mode Editor Aktif</small>
+                      </div>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                      <button id="btnRefreshDb" onclick="refreshDatabase(event)" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                        <i class="fas fa-sync-alt"></i>
+                      </button>
+                      <a href="https://docs.google.com/spreadsheets/d/1LNnWEQYBIHqNHYP6-2-vkt0mnkRiKSx29cY3CAyNkfk/edit" 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          class="btn btn-info btn-sm rounded-pill fw-bold shadow-sm px-4 text-white">
+                        <i class="fas fa-external-link-alt me-2"></i>Buka Tab Baru
+                      </a>
+                    </div>
                   </div>
-                  <div class="mb-3">
-                    <label class="form-label fw-bold small text-muted">Golongan</label>
-                    <input type="text" class="form-control border-success-subtle" id="golongan" list="listGolongan" placeholder="Pilih/Ketik Golongan..." required>
+                  
+                  <div class="card-body p-0" style="height: 800px; background: #ffffff;">
+                    <iframe 
+                      id="frame-database-absensi"
+                      src="https://docs.google.com/spreadsheets/d/1LNnWEQYBIHqNHYP6-2-vkt0mnkRiKSx29cY3CAyNkfk/edit?rm=minimal" 
+                      width="100%" 
+                      height="100%" 
+                      frameborder="0" 
+                      style="border: none;"
+                      loading="lazy"
+                      allowfullscreen>
+                    </iframe>
                   </div>
-                  <div class="mb-4">
-                    <label class="form-label fw-bold small text-muted">Penempatan Group</label>
-                    <input type="text" class="form-control border-success-subtle" id="groupBaru" list="listGroup" placeholder="Opsional...">
+                  
+                  <div class="card-footer bg-white border-0 py-3 text-center">
+                    <p class="text-muted small mb-0">
+                      <i class="fas fa-cloud-upload-alt me-1 text-success"></i> 
+                      Perubahan pada tabel di atas akan tersimpan otomatis ke sistem utama secara real-time.
+                    </p>
                   </div>
-                  <button type="submit" class="btn btn-success w-100 rounded-pill shadow-sm py-2 fw-bold" id="btnSubmitPegawai">
-                    <i class="fas fa-plus me-2"></i>Tambahkan Pegawai
-                  </button>
-                </form>
-              </div>
-            </div>
-          </div>
 
-          <div class="col-xl-8 col-lg-7">
-            <div class="card border-0 shadow-sm h-100">
-              <div class="card-header bg-white p-4 border-bottom d-flex justify-content-between align-items-center">
-                <h6 class="fw-bold text-dark mb-0"><i class="fas fa-id-card me-2 text-info"></i>Database Master Pegawai</h6>
-                <span class="badge bg-light text-dark border rounded-pill fw-normal">Total: <span id="countPegawai">0</span></span>
-              </div>
-              <div class="card-body p-0">
-                <div class="table-responsive p-4">
-                  <table class="table table-hover w-100 align-middle text-center custom-table" id="tabelMasterPegawai">
-                    <thead class="table-light">
-                      <tr>
-                        <th>No</th>
-                        <th class="text-start">Nama Pegawai</th>
-                        <th>Golongan</th>
-                        <th>Group/Divisi</th>
-                        <th>Aksi</th>
-                      </tr>
-                    </thead>
-                    <tbody id="masterPegawaiBody"></tbody>
-                  </table>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="tab-pane fade" id="tab-kelola-group" role="tabpanel">
-        <div class="row">
-          <div class="col-12">
-            <div class="card border-0 shadow-sm border-top border-warning border-4">
-              <div class="card-header bg-white p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 border-bottom">
-                <div>
-                  <h6 class="fw-bold mb-0 text-warning-emphasis"><i class="fas fa-layer-group me-2"></i>Manajemen Organisasi Group</h6>
-                  <small class="text-muted">Kelola struktur divisi dan anggota didalamnya</small>
+        <div id="section-cuti" class="content-section" style="display:none;">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12">
+                <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 15px;">
+                  
+                  <div class="card-header py-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(45deg, #e67e22, #d35400);">
+                    <div class="d-flex align-items-center">
+                      <div class="icon-badge bg-white me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 10px; color: #d35400;">
+                        <i class="fas fa-calendar-check"></i>
+                      </div>
+                      <div>
+                        <h6 class="fw-bold mb-0 text-white">Monitoring Cuti Pegawai</h6>
+                        <small class="text-white-50" style="font-size: 0.75rem;">LPKA Kutoarjo - Rekapitulasi Izin & Cuti</small>
+                      </div>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                      <button onclick="refreshCuti()" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                        <i class="fas fa-sync-alt"></i>
+                      </button>
+                      <a href="https://cekcutiku.netlify.app/" 
+                         target="_blank" 
+                         rel="noopener noreferrer" 
+                         class="btn btn-warning btn-sm rounded-pill fw-bold shadow-sm px-4 text-dark">
+                        <i class="fas fa-user-clock"></i>Monitoring Cuti
+                      </a>
+                    </div>
+                  </div>
+                  
+                  <div class="card-body p-0" style="height: 600px; background: #f8f9fa;">
+                    <iframe 
+                      id="frame-cuti"
+                      src="https://cekcutiku.netlify.app/"
+                      width="100%" 
+                      height="100%" 
+                      frameborder="0" 
+                      style="border: none;"
+                      loading="lazy"
+                      allowfullscreen>
+                    </iframe>
+                  </div>
+                  
+                  <div class="card-footer bg-white border-0 py-3">
+                    <div class="row align-items-center">
+                      <div class="col-md-8">
+                        <p class="text-muted small mb-0">
+                          <i class="fas fa-info-circle me-1 text-warning"></i> 
+                          Menampilkan data real-time dari formulir pengajuan cuti.
+                        </p>
+                      </div>
+                      <div class="col-md-4 text-md-end">
+                        <span class="badge bg-light text-dark rounded-pill border">
+                          <i class="fas fa-clock me-1 text-primary"></i> Auto-Sync Aktif
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
                 </div>
-                <button class="btn btn-warning btn-sm fw-bold rounded-pill shadow-sm px-4" onclick="bukaModalBuatGroup()">
-                  <i class="fas fa-plus me-1"></i>Bentuk Group Baru
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="section-pegawai" class="content-section" style="display:none;">
+          <div class="container-fluid">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h4 class="fw-bold mb-0 text-dark"><i class="fas fa-users-cog me-2"></i>Manajemen SDM</h4>
+              <button class="btn btn-outline-danger shadow-sm fw-bold rounded-pill px-4 btn-sm" onclick="handleResetAbsensi()">
+                <i class="fas fa-radiation-alt me-2"></i>Reset Database Absensi
+              </button>
+            </div>
+
+            <ul class="nav nav-pills mb-4 bg-white p-2 shadow-sm rounded-pill" id="pegawaiTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active rounded-pill fw-bold px-4" id="kelola-pegawai-tab" data-bs-toggle="tab" data-bs-target="#tab-kelola-pegawai" type="button" role="tab">
+                  <i class="fas fa-user-tie me-2"></i>Kelola Pegawai
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link rounded-pill fw-bold px-4" id="kelola-group-tab" data-bs-toggle="tab" data-bs-target="#tab-kelola-group" type="button" role="tab">
+                  <i class="fas fa-layer-group me-2"></i>Kelola Group
+                </button>
+              </li>
+            </ul>
+
+            <div class="tab-content" id="pegawaiTabContent">
+              
+              <div class="tab-pane fade show active" id="tab-kelola-pegawai" role="tabpanel">
+                <div class="row g-4">
+                  <div class="col-xl-4 col-lg-5">
+                    <div class="card border-0 shadow-sm border-top border-success border-4 h-100">
+                      <div class="card-header bg-white border-bottom p-4">
+                        <h6 class="fw-bold text-success mb-0"><i class="fas fa-user-plus me-2"></i>Register Pegawai Baru</h6>
+                      </div>
+                      <div class="card-body p-4">
+                        <form id="formPegawai" onsubmit="handlePegawaiSubmit(event)">
+                          <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">Nama Lengkap</label>
+                            <input type="text" class="form-control border-success-subtle" id="namaBaru" placeholder="Masukkan nama..." required>
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label fw-bold small text-muted">Golongan</label>
+                            <input type="text" class="form-control border-success-subtle" id="golongan" list="listGolongan" placeholder="Pilih/Ketik Golongan..." required>
+                          </div>
+                          <div class="mb-4">
+                            <label class="form-label fw-bold small text-muted">Penempatan Group</label>
+                            <input type="text" class="form-control border-success-subtle" id="groupBaru" list="listGroup" placeholder="Opsional...">
+                          </div>
+                          <button type="submit" class="btn btn-success w-100 rounded-pill shadow-sm py-2 fw-bold" id="btnSubmitPegawai">
+                            <i class="fas fa-plus me-2"></i>Tambahkan Pegawai
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-xl-8 col-lg-7">
+                    <div class="card border-0 shadow-sm h-100">
+                      <div class="card-header bg-white p-4 border-bottom d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold text-dark mb-0"><i class="fas fa-id-card me-2 text-info"></i>Database Master Pegawai</h6>
+                        <span class="badge bg-light text-dark border rounded-pill fw-normal">Total: <span id="countPegawai">0</span></span>
+                      </div>
+                      <div class="card-body p-0">
+                        <div class="table-responsive p-4">
+                          <table class="table table-hover w-100 align-middle text-center custom-table" id="tabelMasterPegawai">
+                            <thead class="table-light">
+                              <tr>
+                                <th>No</th>
+                                <th class="text-start">Nama Pegawai</th>
+                                <th>Golongan</th>
+                                <th>Group/Divisi</th>
+                                <th>Aksi</th>
+                              </tr>
+                            </thead>
+                            <tbody id="masterPegawaiBody"></tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tab-pane fade" id="tab-kelola-group" role="tabpanel">
+                <div class="row">
+                  <div class="col-12">
+                    <div class="card border-0 shadow-sm border-top border-warning border-4">
+                      <div class="card-header bg-white p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 border-bottom">
+                        <div>
+                          <h6 class="fw-bold mb-0 text-warning-emphasis"><i class="fas fa-layer-group me-2"></i>Manajemen Organisasi Group</h6>
+                          <small class="text-muted">Kelola struktur divisi dan anggota didalamnya</small>
+                        </div>
+                        <button class="btn btn-warning btn-sm fw-bold rounded-pill shadow-sm px-4" onclick="bukaModalBuatGroup()">
+                          <i class="fas fa-plus me-1"></i>Bentuk Group Baru
+                        </button>
+                      </div>
+                      <div class="card-body p-4">
+                        <div class="row mb-4">
+                          <div class="col-md-5">
+                            <div class="p-3 bg-light rounded-3 border">
+                              <label class="form-label fw-bold text-dark small">FILTER ANGGOTA BERDASARKAN GROUP:</label>
+                              <select class="form-select shadow-sm border-warning" id="searchGroup" onchange="tampilkanAnggotaGroup()">
+                                <option value="">-- Silakan Pilih Group --</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="table-responsive border rounded-3 overflow-hidden">
+                          <table class="table table-hover w-100 align-middle text-center custom-table mb-0">
+                            <thead class="table-light">
+                              <tr>
+                                <th width="5%">No</th>
+                                <th class="text-start">Nama Pegawai</th>
+                                <th width="20%">Golongan</th>
+                                <th width="25%">Kontrol Keanggotaan</th>
+                              </tr>
+                            </thead>
+                            <tbody id="bodyAnggotaGroup">
+                              <tr>
+                                <td colspan="4" class="text-muted py-5">
+                                  <i class="fas fa-info-circle me-2"></i>Pilih group pada dropdown di atas untuk melihat rincian anggota.
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div> 
+          </div>
+        </div>
+
+        <div id="section-database-cuti" class="content-section" style="display:none;">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12">
+                <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 15px;">
+                  
+                  <div class="card-header bg-dark py-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(45deg, #212529, #343a40);">
+                    <div class="d-flex align-items-center">
+                      <div class="icon-badge bg-primary text-white me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 10px;">
+                        <i class="fas fa-database"></i>
+                      </div>
+                      <div>
+                        <h6 class="fw-bold mb-0 text-white">Database Cuti Pegawai</h6>
+                        <small class="text-white-50" style="font-size: 0.75rem;">Mode Editor Aktif</small>
+                      </div>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                      <button onclick="refreshDatabase(event)" class="btn btn-sm btn-outline-light rounded-pill px-3" id="btnRefreshDbCuti">
+                        <i class="fas fa-sync-alt"></i>
+                      </button>
+                      <a href="https://docs.google.com/spreadsheets/d/1vBCMqy6NCOkgxbGsOVQIjjnahLAW9VZHFjcfwgLuAnU/edit?gid=1245161159" 
+                         target="_blank" 
+                         class="btn btn-info btn-sm rounded-pill fw-bold shadow-sm px-4 text-white">
+                        <i class="fas fa-external-link-alt me-2"></i>Buka Tab Baru
+                      </a>
+                    </div>
+                  </div>
+                  
+                  <div class="card-body p-0" style="height: 800px; background: #ffffff;">
+                    <iframe 
+                      id="frame-database-cuti"
+                      src="https://docs.google.com/spreadsheets/d/1vBCMqy6NCOkgxbGsOVQIjjnahLAW9VZHFjcfwgLuAnU/edit?gid=1245161159" 
+                      width="100%" 
+                      height="100%" 
+                      frameborder="0" 
+                      style="border: none;"
+                      loading="lazy"
+                      allowfullscreen>
+                    </iframe>
+                  </div>
+                  
+                  <div class="card-footer bg-white border-0 py-3 text-center">
+                    <p class="text-muted small mb-0">
+                      <i class="fas fa-cloud-upload-alt me-1 text-success"></i> 
+                      Perubahan tersimpan otomatis. Gunakan tombol refresh jika data belum sinkron.
+                    </p>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="section-logs" class="content-section" style="display:none;">
+          <div class="card interactive-card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white p-4 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3">
+              <h6 class="fw-bold text-dark mb-0"><i class="fas fa-history text-primary me-2"></i>Riwayat Sistem & Log Aktivitas Dashboard</h6>
+              
+              <div>
+                <button class="btn btn-outline-danger btn-sm rounded-pill px-3 me-2 shadow-sm fw-bold" onclick="handleHapusSemuaLog()">
+                  <i class="fas fa-trash-alt me-1"></i> Kosongkan Log
+                </button>
+                <button class="btn btn-outline-primary btn-sm rounded-pill px-3 shadow-sm fw-bold" onclick="loadDataServer(false)">
+                  <i class="fas fa-sync-alt me-1"></i> Refresh Log
                 </button>
               </div>
-              <div class="card-body p-4">
-                <div class="row mb-4">
-                  <div class="col-md-5">
-                    <div class="p-3 bg-light rounded-3 border">
-                      <label class="form-label fw-bold text-dark small">FILTER ANGGOTA BERDASARKAN GROUP:</label>
-                      <select class="form-select shadow-sm border-warning" id="searchGroup" onchange="tampilkanAnggotaGroup()">
-                        <option value="">-- Silakan Pilih Group --</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                
-                <div class="table-responsive border rounded-3 overflow-hidden">
-                  <table class="table table-hover w-100 align-middle text-center custom-table mb-0">
-                    <thead class="table-light">
-                      <tr>
-                        <th width="5%">No</th>
-                        <th class="text-start">Nama Pegawai</th>
-                        <th width="20%">Golongan</th>
-                        <th width="25%">Kontrol Keanggotaan</th>
-                      </tr>
-                    </thead>
-                    <tbody id="bodyAnggotaGroup">
-                      <tr>
-                        <td colspan="4" class="text-muted py-5">
-                          <i class="fas fa-info-circle me-2"></i>Pilih group pada dropdown di atas untuk melihat rincian anggota.
-                        </td>
-                      </tr>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive p-4">
+                <table id="tabelLogAktivitas" class="table table-hover align-middle custom-table w-100 text-center">
+                  <thead class="table-light">
+                    <tr>
+                      <th width="20%" class="text-start">Tanggal & Waktu</th>
+                      <th width="25%">Jenis Aktivitas</th>
+                      <th width="55%" class="text-start">Rincian Perubahan Data</th>
+                    </tr>
+                  </thead>
+                  <tbody id="logAktivitasBody">
                     </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div> </div>
-</div>
-
-<div id="section-database-cuti" class="content-section" style="display:none;">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-12">
-        <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 15px;">
-          
-          <div class="card-header bg-dark py-3 d-flex justify-content-between align-items-center" style="background: linear-gradient(45deg, #212529, #343a40);">
-            <div class="d-flex align-items-center">
-              <div class="icon-badge bg-primary text-white me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 10px;">
-                <i class="fas fa-database"></i>
-              </div>
-              <div>
-                <h6 class="fw-bold mb-0 text-white">Database Cuti Pegawai</h6>
-                <small class="text-white-50" style="font-size: 0.75rem;">Mode Editor Aktif</small>
-              </div>
-            </div>
-            
-            <div class="d-flex gap-2">
-              <button onclick="refreshDatabase(event)" class="btn btn-sm btn-outline-light rounded-pill px-3" id="btnRefreshDb">
-                <i class="fas fa-sync-alt"></i>
-              </button>
-              <a href="https://docs.google.com/spreadsheets/d/1vBCMqy6NCOkgxbGsOVQIjjnahLAW9VZHFjcfwgLuAnU/edit?gid=1245161159" 
-                 target="_blank" 
-                 class="btn btn-info btn-sm rounded-pill fw-bold shadow-sm px-4 text-white">
-                <i class="fas fa-external-link-alt me-2"></i>Buka Tab Baru
-              </a>
-            </div>
-          </div>
-          
-          <div class="card-body p-0" style="height: 800px; background: #ffffff;">
-            <iframe 
-              id="frame-database"
-              src="https://docs.google.com/spreadsheets/d/1vBCMqy6NCOkgxbGsOVQIjjnahLAW9VZHFjcfwgLuAnU/edit?gid=1245161159" 
-              width="100%" 
-              height="100%" 
-              frameborder="0" 
-              style="border: none;"
-              loading="lazy"
-              allowfullscreen>
-            </iframe>
-          </div>
-          
-          <div class="card-footer bg-white border-0 py-3 text-center">
-            <p class="text-muted small mb-0">
-              <i class="fas fa-cloud-upload-alt me-1 text-success"></i> 
-              Perubahan tersimpan otomatis. Gunakan tombol refresh jika data belum sinkron.
-            </p>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="section-input" class="content-section" style="display:none;">
-  <div class="tab-content">
-    
-    <div class="tab-pane fade show active" id="tab-efektif">
-      <div class="d-flex justify-content-center mt-4">
-        <button type="submit" form="formHariEfektif" class="btn btn-primary rounded-pill px-5 fw-bold shadow" id="btnSubmitEfektif">
-          <i class="fas fa-save me-2"></i>Simpan Konfigurasi
-        </button>
-      </div>
-    </div>
-
-    <div class="tab-pane fade" id="tab-massal">
-      <div class="d-flex justify-content-center mt-4">
-        <button type="submit" form="formStatusMassal" class="btn btn-success rounded-pill px-5 fw-bold shadow" id="btnStatusMassal">
-          <i class="fas fa-bolt me-2"></i>Eksekusi Perubahan
-        </button>
-      </div>
-    </div>
-
-    <div class="tab-pane fade" id="tab-individu">
-      <div class="d-flex justify-content-center mt-4">
-        <button type="submit" form="formAbsensi" class="btn btn-warning rounded-pill px-5 fw-bold shadow text-dark" id="btnSubmitAbsen">
-          <i class="fas fa-save me-2"></i>Simpan Perubahan
-        </button>
-      </div>
-    </div>
-
-  </div>
-</div>
-        <div id="section-logs" class="content-section" style="display:none;">
-            <div class="card interactive-card border-0 shadow-sm mb-4">
-              <div class="card-header bg-white p-4 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3">
-                <h6 class="fw-bold text-dark mb-0"><i class="fas fa-history text-primary me-2"></i>Riwayat Sistem & Log Aktivitas Dashboard</h6>
-                
-                <div>
-                  <button class="btn btn-outline-danger btn-sm rounded-pill px-3 me-2 shadow-sm fw-bold" onclick="handleHapusSemuaLog()">
-                    <i class="fas fa-trash-alt me-1"></i> Kosongkan Log
-                  </button>
-                  <button class="btn btn-outline-primary btn-sm rounded-pill px-3 shadow-sm fw-bold" onclick="loadDataServer(false)">
-                    <i class="fas fa-sync-alt me-1"></i> Refresh Log
-                  </button>
-                </div>
-              </div>
-              <div class="card-body p-0">
-                <div class="table-responsive p-4">
-                  <table id="tabelLogAktivitas" class="table table-hover align-middle custom-table w-100 text-center">
-                    <thead class="table-light">
-                      <tr>
-                        <th width="20%" class="text-start">Tanggal & Waktu</th>
-                        <th width="25%">Jenis Aktivitas</th>
-                        <th width="55%" class="text-start">Rincian Perubahan Data</th>
-                      </tr>
-                    </thead>
-                    <tbody id="logAktivitasBody">
-                      </tbody>
-                  </table>
-                </div>
+                </table>
               </div>
             </div>
           </div>
         </div>
 
-    </div>
-  </div>
-
-  <div class="modal fade" id="modalEdit" tabindex="-1" aria-hidden="true">
+      </div> </div> </div> <div class="modal fade" id="modalEdit" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content border-0 shadow-lg rounded-4">
         <form id="formEditPegawai" onsubmit="handleEditSubmit(event)">
@@ -862,7 +871,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-  
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>  
   <script src="script.js"></script>
 </body>
 </html>
