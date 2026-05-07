@@ -737,32 +737,44 @@ async function simpanGroupBaru(e) {
 }
 
 // ==========================================
-// TABEL LOG AKTIVITAS & IFRAMES
+// RENDER TABEL LOG AKTIVITAS (FIXED SORTING)
 // ==========================================
 function populateLogAktivitas(sysLogs) {
-    if (dataTableLogs) { dataTableLogs.destroy(); }
-    let tbody = '';
-    const sortedLogs = [...sysLogs].sort((a, b) => new Date(b.waktu) - new Date(a.waktu));
-    
-    sortedLogs.forEach(log => {
-      let badgeClass = 'bg-light text-dark border'; let act = log.aktivitas.toUpperCase();
-      if(act.includes('ABSEN')) badgeClass = 'bg-success bg-opacity-10 text-success border-success border-opacity-25';
-      else if(act.includes('HAPUS') || act.includes('RESET')) badgeClass = 'bg-danger bg-opacity-10 text-danger border-danger border-opacity-25';
-      else if(act.includes('PEGAWAI') || act.includes('GROUP')) badgeClass = 'bg-primary bg-opacity-10 text-primary border-primary border-opacity-25';
-      else if(act.includes('EDIT')) badgeClass = 'bg-warning bg-opacity-10 text-warning border-warning border-opacity-25';
+  if (dataTableLogs) { dataTableLogs.destroy(); }
   
-      let dateObj = new Date(log.waktu);
-      let timeStr = dateObj.toLocaleString('id-ID', {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'});
+  let tbody = '';
+  // Urutkan dari JS (opsional)
+  const sortedLogs = [...sysLogs].sort((a, b) => new Date(b.waktu) - new Date(a.waktu));
   
-      tbody += `<tr>
-        <td class="fw-medium text-muted text-start" style="white-space: nowrap;"><i class="fas fa-clock me-2 opacity-50"></i>${timeStr}</td>
-        <td class="fw-bold"><span class="badge ${badgeClass} px-3 py-2 w-100 rounded-pill">${log.aktivitas}</span></td>
-        <td class="small text-start lh-sm">${log.keterangan || '<span class="text-muted fst-italic">-</span>'}</td>
-      </tr>`;
-    });
+  sortedLogs.forEach(log => {
+    let badgeClass = 'bg-light text-dark border'; 
+    let act = log.aktivitas ? log.aktivitas.toUpperCase() : '';
     
-    $('#logAktivitasBody').html(tbody);
-    dataTableLogs = $('#tabelLogAktivitas').DataTable({ pageLength: 10, order: [[0, 'desc']], language: { url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/id.json' }});
+    // Penyesuaian warna badge
+    if(act.includes('ABSEN')) badgeClass = 'bg-success bg-opacity-10 text-success border-success border-opacity-25';
+    else if(act.includes('HAPUS') || act.includes('RESET')) badgeClass = 'bg-danger bg-opacity-10 text-danger border-danger border-opacity-25';
+    else if(act.includes('PEGAWAI') || act.includes('GROUP')) badgeClass = 'bg-primary bg-opacity-10 text-primary border-primary border-opacity-25';
+    else if(act.includes('EDIT')) badgeClass = 'bg-warning bg-opacity-10 text-warning border-warning border-opacity-25';
+
+    let dateObj = new Date(log.waktu);
+    let timeStr = dateObj.toLocaleString('id-ID', {day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'});
+
+    // KUNCI PERBAIKAN: Menambahkan data-sort="${log.waktu}" agar DataTables mengurutkan berdasarkan waktu asli
+    tbody += `<tr>
+      <td class="fw-medium text-muted text-start" data-sort="${log.waktu}" style="white-space: nowrap;"><i class="fas fa-clock me-2 opacity-50"></i>${timeStr}</td>
+      <td class="fw-bold"><span class="badge ${badgeClass} px-3 py-2 w-100 rounded-pill">${log.aktivitas}</span></td>
+      <td class="small text-start lh-sm">${log.keterangan || '<span class="text-muted fst-italic">-</span>'}</td>
+    </tr>`;
+  });
+  
+  $('#logAktivitasBody').html(tbody);
+  
+  dataTableLogs = $('#tabelLogAktivitas').DataTable({
+    pageLength: 10,
+    order: [[0, 'desc']], // Akan mengurutkan dari waktu terbaru dengan sempurna
+    language: { url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/id.json' },
+    dom: '<"row align-items-center mb-3"<"col-md-6"l><"col-md-6"f>>rt<"row align-items-center mt-3"<"col-md-6"i><"col-md-6"p>>'
+  });
 }
 
 async function handleHapusSemuaLog() {
